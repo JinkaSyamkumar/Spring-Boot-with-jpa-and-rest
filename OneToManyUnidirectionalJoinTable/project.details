@@ -1,0 +1,33 @@
+Uses 3 tables
+
+1.Employee table with two columns id(P) n name
+2.Skillset table with two columns id(P) n name
+3.emp_skill table with two columns emp_id and tech_id as foriegn columns
+
+skill set is independent table with id and name pre populated
+
+when a new employee created, we will assign multiple skills fetched from skillset table.
+but here in employee we will only store employee tables and the relation is stored in intermediate table.
+
+here employee needs skillset details when we want tosee, so employee is on the owning side of relation so it will have @jointable
+
+
+WITHOUT JOIN TABLE ALSO WE CAN IMPLEMENT.Then why?
+employee can have n no of skillsets.if we go with two table, 
+	we can not have primary key in the second table as it wont allow to map multiple employees single resource
+	and if we leave primary and go with just normal name column,it will produce lot of foriegn keys in the secondary table.
+	and also only way to add anew reource will be through ui
+	bcoz u wont have master table concept in db
+	
+	so this relation is one to many -- unidirectional
+	bcoz other way , we can not have many employees in the same skillset row as each skillset id is primary.
+	
+	but if u take 
+	bookcategory and book, 
+	one category can have many books
+	cateory will have id n name, book will have id,name n category id
+	a book row values ( 1, HarryPotter ) and will have one category name like (1,HarryPotter,Adventure)
+	here each row is unique.
+	
+
+
