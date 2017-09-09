@@ -15,6 +15,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 /**
  * @author Syam
  *
@@ -33,6 +35,7 @@ public class EmpAddress {
 	
 	@OneToOne(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="emp_id")
+	@JsonBackReference
 	private Employee employee;
 	
 	public EmpAddress() {

@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 /**
  * @author Syam
  *
@@ -26,6 +28,7 @@ public class Employee {
 	private String name;
 	
 	@OneToOne(mappedBy="employee",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	@JsonBackReference
 	private EmpAddress empAddress;
 	
 	public Employee() {
