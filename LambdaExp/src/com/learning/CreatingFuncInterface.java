@@ -1,4 +1,4 @@
-package com.nielsen;
+package com.learning;
 
 /**
  * @author syamkumarj

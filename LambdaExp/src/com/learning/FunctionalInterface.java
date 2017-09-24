@@ -1,4 +1,4 @@
-package com.nielsen;
+package com.learning;
 
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
