@@ -1,0 +1,170 @@
+JAVA - 1991 - goal - to create a new portable language that can run on any platform
+Original name - oak - changed to JAVA - as they were drinking lots of coffee to finish it developing.
+Original tag line - Write once, run everywhere
+1996 - first JDK 1.0
+
+Principles of Java
+	Simple, object-oriented and familiar
+	Robust with object-oriented and Secure
+	architecture neutral and portable - can run in any platform
+	High-performance
+	Interpreted - mean application is compiled to a format that interpreted at run time rather than run directly as machine code,
+    Threaded - can do more than one thing at a time and dynamic
+    
+RUNTIME Architecture
+
+	Java is an interpreted language
+	It compiles to bytecode instead of machine language.
+	and thats what makes -  compiled application is portable between platforms(os - windows,mac,linux etc for which there is JVM) without recompiling.
+	
+    /\
+	| Custom - compiled byte code - finally our application compiled to byte code that runs on top of below layers.
+	| Core runtime and additional libraries - on top of JVM , we add ore runtime and additional libraries - core run time is JAVA CLASS LIBRARY which is (jdk and jre)
+	| JVM - on top of OS , there is JVM provided by oracle(some custom jvms are provided by ibm n android etc)
+	| Operating system - base
+	
+JAVA EDITIONS
+
+	Java platform, Standard Edition(SE)
+		Standard for core language and runtime environment(JRE)
+		
+	Java platform, Enterprise Edition(EE)
+		On top of SE
+		Standard for building industrial-strength web applications.
+		
+	Java Platform, Micro Edition(ME)
+		Micro-controllers,sensors and mobile devices.
+		ex- sim card 
+
+Java Runtime Environment
+	Java SE Runtime Environment(JRE) includes JVM
+	Runs all java applications:desktop,browser and server and also sometimes uses JEE to run server based applications
+	Must be updated regularly 
+	includes tools for compiling and packaging
+		java:runtime
+		javac:compiler
+		javadoc:doccs builder
+		jar:archive builder
+		To code, run and package java applications we need to know above but IDEs available helps with those by providing easy layer on top of those.
+		
+All code is written in classes
+classes are defined in source code files using .java extension
+**javac - command compiles .java code into bytecode .class that can be interpreted by jvm
+and then **java command runs those code
+
+Check file A_SimpleJavaClass
+
+JAVA CASE SENSITIVE
+	firstName
+	firSTNAME
+	fiRSTNAME - all are different
+	
+WHITE SPACE
+	white space does not affect interpretation of code
+	spaces,tabs and line feeds are collapsed by compiler
+	all statements must end with ;
+	
+Identifiers and Keywords
+
+	Class,method,fields and other names are identifiers.
+	Identifiers must start with aplha character or underscore
+	private int @text - WRONG
+	keywords can not be used as class or other identifiers
+	private string main; WRONG
+	
+Identifier Conventions
+
+	Class name starts with uppercase
+	methods and variables start with lowercase character
+	constants are all uppercase
+	 by public static final String FIRSTNAME="Syam";
+	 			static mean - memeber of the class
+	 			final - mean once set can not be changed
+
+
+MEMORY MANAGEMENT AND GARBAGE COLLECTION
+Eventhough JAVA is compiled and statically typed language it AUTO Manages memory for us.
+
+	Memory for objects is allocated automatically - u dont have to allocate/deallocate memory for anything
+	Garbage Collector feature of JVM makes the above possible
+	
+	How Garbage Collector works??
+		Objects are created in heap memory -
+			When u create a variale that references complex object that variable is stored in the fastest available memory(STACK) and the object 
+			that it references is stored in HEAP Memory.
+			stack is faster and heap is slower but heap is more dynamic.
+			Complex objects are always stored in heap , primitive types may be stored in stack
+		AS LONG AS any variable references an object, that object is retained in memory it wont be eligible for GARBAGE COLLECTION.
+			so when u create variable for String, Date,Collection or any other complex object , as long as any variable references it will be available  
+		When all references expire, the object is ELIGIBLE for garbage collection.but its up to GARBAGE COLLECTOR when to clear it.
+		
+WHEN DO REFERENCES EXPIRE?
+		Variables local to methods or code bloacks expire with scope
+		like above , once eligible collector handles it.
+		but if u want to explicitly dereference variables - use null
+		String x ="Hello";
+		x=null;
+		once u assign null, it dereferences it from memory and will be upto collector.
+		
+Java Garbage Collector:-
+		Runs in its own thread - depending on the kind of application u r running n the hardware that u r using
+		Can not force garbage collection, runs on its own, u canonly dereference objects, gc smart enough when to clean
+		but u can request or most u can do is using methods System.gc() and runtime.gc() can request garbage collection, but there is no guarantee it will happen.
+		If no memory is available(mean JVM Runs out of memory) for a newly requested object, system throws OutOfMemoryError.
+To prevent OutOfMemoryError
+		Minimise the no of objects you create
+		If concerned, use these methods to find out how much memory is availble
+			Runtime.maxMemory(); - how much allocated - System.out.println(Runtime.getRuntime().maxMemory());
+			Runtime.totalMemory(); - how much available
+
+SETTING AVAILABLE MEMORY
+		Use command-line options to manage amount of available heap memory:
+			java -xms256s HelloWorld - initial heap size - xms256S - see s as start
+			java -xmx256m HelloWorld - Maximum heap size - 256M - see m as maximum
+			java -xmn256n HelloWorld - Heap size for young generation objects
+			
+JAVA_HOME - installtion folder is set so that java compiler and other tools are available for the development ides or other purposes
+PATH - bin path of installation folder
+
+commands
+java -verion
+javac -version
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
