@@ -1,0 +1,37 @@
+## 1
+
+Prior to Java8, java is not considered as a functional programming.It was more of object oriented programming
+but java 8 we do have "FUNCTIONAL INTERFACES".
+	To accomplish this FI - oracle provided two new packages.
+		1.java.util.function 
+		2.java.util.Stream
+		
+Lambda expressions are also introduced in java8, it makes use of above two.
+
+Functional Interface mean
+	1)An interface that contains at most one abstraction function
+	2)fi - represents ABSTRACT concepts such as - FUNCTIONS/ACTIONS/PREDICATES
+	
+FEW of commonly used Functional Interfaces -
+
+import java.util.function.BinaryOperator; takes two and gives the same -> UnaryOperator<String>
+import java.util.function.Consumer;  takes one and gives none so -> Consumer<String>
+import java.util.function.Function;  takes one , gives one so -> Function<String, Integer>
+import java.util.function.Predicate; takes one, gives boolean -> Predicate<String>
+import java.util.function.Supplier;  takes none, gets one -> Supplier<String>
+import java.util.function.UnaryOperator; takes one and gives the same -> UnaryOperator<String>
+
+Predicate - takes one argument, TESTS it and returns a Boolean -
+		    mean DONT LOOK AT - predicate<String, Integr>
+			- it means objPredicate.test("test") - here test() method taking one argument
+			Since it is a interace, we need to override the test() method of it.
+
+Consumer -	ACCEPTs single argument with no return value
+
+Function -	APPLYs one argument , produces result
+
+Supplier -	GETs results , Takes no argument, 
+
+UnaryOperator - takes single argument and APPLY it to a logic and returns value
+
+BinaryOperator - takes two arguments and APPLY it to a logic and returns a value
