@@ -15,11 +15,15 @@ RUNTIME Architecture
 
 	Java is an interpreted language
 	It compiles to bytecode instead of machine language.
-	and thats what makes -  compiled application is portable between platforms(os - windows,mac,linux etc for which there is JVM) without recompiling.
+	and thats what makes -  compiled application is portable between platforms(os - windows,mac,linux etc for which there is JVM***) without recompiling.
 	
+	JAVA BYTECODE is a instruction set for JAVA VIRTUAL MACHINE i.e it is the machine language for JVM. When the program is runned, it runs under JVM. 
+	JVM converts the bytecode to the machine language that is understood by the operating system.ie jvm runs on tops of os.Thus the same source code can be run on multiple platform.
+	
+	while reading below, start at Operating system
     /\
 	| Custom - compiled byte code - finally our application compiled to byte code that runs on top of below layers.
-	| Core runtime and additional libraries - on top of JVM , we add ore runtime and additional libraries - core run time is JAVA CLASS LIBRARY which is (jdk and jre)
+	| Core runtime and additional libraries - on top of JVM , we add core runtime and additional libraries - core run time is JAVA CLASS LIBRARY which is (jdk and jre)
 	| JVM - on top of OS , there is JVM provided by oracle(some custom jvms are provided by ibm n android etc)
 	| Operating system - base
 	
@@ -83,14 +87,14 @@ Identifier Conventions
 
 
 MEMORY MANAGEMENT AND GARBAGE COLLECTION
-Eventhough JAVA is compiled and statically typed language it AUTO Manages memory for us.
+Even though JAVA is compiled and statically typed language it AUTO Manages memory for us.
 
 	Memory for objects is allocated automatically - u dont have to allocate/deallocate memory for anything
 	Garbage Collector feature of JVM makes the above possible
 	
 	How Garbage Collector works??
 		Objects are created in heap memory -
-			When u create a variale that references complex object that variable is stored in the fastest available memory(STACK) and the object 
+			When u create a variable that references complex object that variable is stored in the fastest available memory(STACK) and the object 
 			that it references is stored in HEAP Memory.
 			stack is faster and heap is slower but heap is more dynamic.
 			Complex objects are always stored in heap , primitive types may be stored in stack
@@ -129,6 +133,40 @@ PATH - bin path of installation folder
 commands
 java -verion
 javac -version
+
+Creating a simple java program through notepad
+
+1)Open a notepad - write below content
+
+//public - Access modifier(keyword) , class - keyword , HelloWorld
+public class HelloWorld{
+
+  public static void main(String[] args) {
+        System.out.println("Hello");
+        System.out.println(args[0]);
+    }
+ 
+}
+2)Save it with same name as class name with .java extension - HelloWorld.java
+3)open cmd - use compiler now - javac HelloWorld.java
+4)Now class file will be generated as HelloWorld.class
+5)Now run with java command as -> java HelloWorld (REMEMBER NO NEED TO ADD .CLASS extension here)
+When we run above class,JRE will look for main method and run automatically.
+
+To pass argument to String[] in main method , use below command
+
+-> java HelloWorld myargument
+syamkumars-MacBook-Air:misc syamkumarj$ javac HelloWorld.java
+syamkumars-MacBook-Air:misc syamkumarj$ java HelloWorld syam
+Hello
+syam
+-> to pass multiple -> java HelloWorld jinka syam kumar
+->what if ur args have space -> java HelloWorld "jinka syam kumar" 
+-> to compile or call class in a package -> com.example 
+	javac com.example.HelloWorld.java
+	or
+	cd to com/example directory and run javac
+
 		
 
 
