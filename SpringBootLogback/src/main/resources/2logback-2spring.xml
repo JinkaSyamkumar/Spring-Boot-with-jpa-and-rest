@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+
+	<appender name="CONSOLEOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{10} : %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="ROLLINGFILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log.txt</file>
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{10} : %msg%n</pattern>
+		</encoder>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+			<!-- %d and %i must for sizeandtimebasedtriggeringpolicy -->
+			<fileNamePattern>log_%d{yyyy-MM-dd_HH:mm}_%i.txt</fileNamePattern>
+
+			<!-- Once file reaches 10MB it will be indexed - %i -and new file will 
+				be created -->
+			<maxFileSize>10MB</maxFileSize>
+
+			<!-- above we used minute based rolling policy - HH:mm so below it will 
+				have max of 5 mmin history files History depends on the period that we used 
+				in FileNamePattern it can be week/day/minute etc -->
+			<maxHistory>5</maxHistory>
+
+			<totalSizeCap>1GB</totalSizeCap>
+		</rollingPolicy>
+	</appender>
+
+
+	<logger name="com.example.demo.controller" level="INFO"
+		additivity="true">
+		<appender-ref ref="ROLLINGFILE" />
+	</logger>
+	
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLEOUT" />
+	</root>
+
+</configuration>

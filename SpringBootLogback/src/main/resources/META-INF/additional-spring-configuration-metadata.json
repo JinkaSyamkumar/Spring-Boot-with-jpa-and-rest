@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "log.archive.path",
+    "type": "java.lang.String",
+    "description": "A description for 'log.archive.path'"
+  },
+  {
+    "name": "log.archivePath",
+    "type": "java.lang.String",
+    "description": "A description for 'log.archivePath'"
+  },
+  {
+    "name": "log.archived.path",
+    "type": "java.lang.String",
+    "description": "A description for 'log.archived.path'"
+  }
+]}

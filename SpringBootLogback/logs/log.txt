@@ -1,0 +1,6 @@
+2017-09-27 11:09:12,428 [http-nio-8080-exec-5] INFO  c.e.d.c.BaseController : This is INFO message
+2017-09-27 11:09:12,430 [http-nio-8080-exec-5] WARN  c.e.d.c.BaseController : This is WARN message
+2017-09-27 11:09:12,430 [http-nio-8080-exec-5] ERROR c.e.d.c.BaseController : This is ERROR message
+2017-09-27 11:09:13,192 [http-nio-8080-exec-6] INFO  c.e.d.c.BaseController : This is INFO message
+2017-09-27 11:09:13,192 [http-nio-8080-exec-6] WARN  c.e.d.c.BaseController : This is WARN message
+2017-09-27 11:09:13,192 [http-nio-8080-exec-6] ERROR c.e.d.c.BaseController : This is ERROR message
