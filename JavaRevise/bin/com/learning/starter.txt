@@ -18,7 +18,8 @@ RUNTIME Architecture
 	and thats what makes -  compiled application is portable between platforms(os - windows,mac,linux etc for which there is JVM***) without recompiling.
 	
 	JAVA BYTECODE is a instruction set for JAVA VIRTUAL MACHINE i.e it is the machine language for JVM. When the program is runned, it runs under JVM. 
-	JVM converts the bytecode to the machine language that is understood by the operating system.ie jvm runs on tops of os.Thus the same source code can be run on multiple platform.
+	JVM converts the bytecode to the machine language that is understood by the operating system.ie jvm runs on tops of os.Thus the same source code 
+	can be run on multiple platform.
 	
 	while reading below, start at Operating system
     /\
@@ -166,8 +167,22 @@ syam
 	javac com.example.HelloWorld.java
 	or
 	cd to com/example directory and run javac
-
-		
+	
+Data Types OR Variables
+Variables - used to store data in memory
+There are two major types - 1.PRIMITIVES
+						  - 2.OBJECTS
+Primitive Data Types
+	- used to store Numbers , characters and booleans		
+	- * they are stored in fastest available memory
+	- names are all lowercase
+	- Not a primitive - String
+Declaring
+	- Java is a statically typed language
+	- must have their types declared
+	- int myVar=5;
+		int -> dataType - once the variable set to int, it can not change but in javascript u can change to string at runtime
+			-> why we can not change in java? because compiler looks into this variable DECLARATION and allocates memory for you based on the data type.
 
 
 
