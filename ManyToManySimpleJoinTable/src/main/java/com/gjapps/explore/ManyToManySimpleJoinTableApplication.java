@@ -7,8 +7,9 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class ManyToManySimpleJoinTableApplication {
+	
 	@Bean
-	public ModelMapper modelMapper() {
+	private ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
 	public static void main(String[] args) {
