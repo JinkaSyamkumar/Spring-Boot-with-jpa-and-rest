@@ -6,6 +6,7 @@ package com.gjapps.explore.data.entity;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,7 +20,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "employee")
+@Table(name = "employee4")
 public class Employee {
 
 	@Id
@@ -29,8 +30,8 @@ public class Employee {
 	@Column(name = "name")
 	private String name;
 
-	@OneToMany
-	@JoinTable(name = "emp_skill", 
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinTable(name = "emp4_skill1", 
 			   joinColumns = @JoinColumn(name = "emp_id"), 
 			   inverseJoinColumns = @JoinColumn(name = "skill_id"))
 	private List<SkillSet> skillSets;
