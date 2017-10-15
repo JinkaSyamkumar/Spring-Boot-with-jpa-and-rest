@@ -45,7 +45,7 @@ public class MainController {
 		//bcoz of cascade it will auto save employee as well
 		
 		//1#cascade=CascadeType.ALL on owner is must
-		Employee employee = new Employee();		
+/*		Employee employee = new Employee();		
 		employee.setId("srav0022");
 		employee.setName("Sravani");
 		
@@ -54,7 +54,7 @@ public class MainController {
 
 		obEmpAddress.setEmployee(employee);
 		
-		empAddressRep.save(obEmpAddress);
+		empAddressRep.save(obEmpAddress);*/
 		
 		
 /*		2#save employee first and attach it to the dependent one
@@ -75,6 +75,22 @@ public class MainController {
 		obEmpAddress.setEmployee(employee);
 		
 		empAddressRep.save(obEmpAddress);*/
+		
+
+/* 		When u try from employee, which is not in owning side and also logically employee should be saved and 
+ * 		then it pkey is used in address as fkey
+ * 		but if u try below with emplyee rep it will fail
+ * 		ERROR save the transient instance before flushing : com.gjapps.explore.data.entity.Employee.empAddress -> com.gjapps.explore.data.entity.EmpAddress
+ * 		it says save employyee first and then try to save empaddress which is what we are doing in above
+ * 		Employee employee = new Employee();		
+		employee.setId("akulsr02201");
+		employee.setName("Sravs");
+		
+		EmpAddress obEmpAddress = new EmpAddress();			
+		obEmpAddress.setAddress("Hyd");
+		obEmpAddress.setEmployee(employee);
+		employee.setEmpAddress(obEmpAddress);
+		employeeRep.save(employee);*/
 		
 		return "done!";
 		
