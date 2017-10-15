@@ -1,0 +1,175 @@
+About
+Composite and Collection Value Type Mappings
+	Provide mapping metadata for a composite value type
+	Map a collection of basic value types
+	Map a collection of composite value types
+
+quick annotaton revise --
+1.@Embeddable
+2.@Embedded
+3.@AttributeOverrides({@AttributeOverride(name="addressLine1",column=@Column(name="User_address_Line_1)),
+	@AttributeOverride(name="addressLine1",column=@Column(name="User_address_Line_1))})
+	
+1)Composite Value Type
+
+	
+Below is the Table structure
+User
+	id
+	name
+	addressLine1
+	addressLine2
+	city
+	
+Below is the JAVA class structure
+public class User{
+
+	private int id;
+	private String name;
+	private Address address;
+	}
+	
+public class Address{
+	private String addressLine1;
+	private String addressLine2;
+	private String city;
+}
+
+Here User is an entity mapped to db table but Address does not have separate entity
+It is just part of User entity.
+
+User entity has a field which is of Address data type SO HERE address type which is composite value type
+Composite Value Types mean
+	*Represent a group of values(addressLine1,2,city) in a single java type(Address)
+	called Embedded(in JPA)/ called Composite Type in Hibernate
+	these are not entity only time they are persisted is when we save the parent entity
+			means they completely owned by the containing entities: 
+			they're modified when the entity is modified, 
+			deleted when the entity is deleted, etc.
+			 They can't have their own lifecycle.
+	Does not have an id or Table
+	Only persisted or queries in the context of its parent
+	Data is embedded in the source objects table
+
+2)Collection Value Types
+
+public class Bank{
+	private Long id;
+	private String name;
+	private List<String> contacts = new LinkedList<String>();
+	private Address address = new Address();
+}
+
+above Bank class has collection of strings as contacts ie Collection value type
+WHEN WE ARE MAPPING COLLECTION TYPE IT NEEDS TO HAVE ITS OWN TABLE
+
+BANK_ACCOUNT
+	id
+	name
+
+Collection Value Type
+	Can define a collection of basic or composite value types
+	Composites/basics are stored in a separate collection table
+	Target objects can not be queried , persisted, merged independently of their parent object
+	means they completely owned by the containing entities: 
+		they're modified when the entity is modified, 
+		deleted when the entity is deleted, etc.
+		 They can't have their own lifecycle.
+	Do not have a unique identity
+
+1 - DETAILS	
+	CHECK
+	USERENTITY.JAVA
+	ADDRESSCOMPOSITECLASS.JAVA
+	
+**Benifit of embeddable / composite value type is - here user needs address suppose u have any another entity
+	where address needed again like bank info of user
+	In this case it will be useful
+	like
+	Bank table
+		id
+		acc_no
+		bank_address_line1
+		bank_address_line2
+		bank_city
+		
+Here also we are using address but the names are different than the one that mapped in AddressCompositeClass
+entity there we have address_line1 mapped to attribute addressLine1, but here we have bank_address_line1
+
+so in Bank entity class , in order to use we need to override properties of address columsn in Bank entity
+That can be done with below
+	@AttributeOverrides({@AttributeOverride(name="addressLine1",column=@Column(name="User_address_Line_1)),
+	@AttributeOverride(name="addressLine1",column=@Column(name="User_address_Line_1))})
+	private Address address;
+	
+	CHECK
+	BANK.JAVA
+	
+2 - Details
+	
+**a) Collection of Basic Value types
+		mean collection of strings or 
+		set of long values or 
+		list of integers etc
+		@ElementCollection - it lloks similar to oneToMany but main difference is
+		@ElementCollection is mainly for mapping non-entities (embeddable or basic) 
+		while @OneToMany is used to map entities.
+		
+		ElementCollection is a standard JPA annotation, which is now preferred over the proprietary Hibernate annotation CollectionOfElements.
+		It means that the collection is not a collection of entities, but a collection of simple types (Strings, etc.) or a collection of embeddable elements (class annotated with @Embeddable).
+    		It also means that the elements are completely owned by the containing entities: they're modified when the entity is modified, deleted when the entity is deleted, etc. They can't have their own lifecycle.
+    		
+User
+    	id
+    	name
+    	contacts - list of strings - list of mobile nos
+    	
+In above if a user has 10 mobile nos, then user table will be overloaded with all the duplicate info
+so we can use another table with just a no column which accepts multiple values.
+
+so u get a doubt is it not one to many why element collection here other table we are representing is not another entity
+it is part of base table and its just list of strings
+
+Embeddable above are associated within the table but in this case its diff since we have many contacts ie collection of contacts
+here we create another table mapping user table - id column and new column to hold contacts
+
+user_contacts table holds list of contacts
+id - id of user table - fk
+contact_no - contact no
+(we can make id + contact_info as primary key)
+    	
+in one to many we have o create another entity class to associate above
+but here as it is just list of strings nothing much, we wont create any other java entities
+will just embed everything in single java entity
+
+/*	ElementCollection defines its going to be collection of elements
+	CollectionTable defines details about join table and joining column details
+	Column defines column where the collection values will be saved*/
+	@ElementCollection
+	@CollectionTable(name="user1_contacts",
+	joinColumns=@JoinColumn(name="id"))
+	@Column(name="contact_no")
+	private Collection<String> contacts = new ArrayList<String>();
+	
+	Collection<String> contacts /We can use List /we can use Set
+	Only thing that does not go is Map
+	
+	*****ElementCollectionBasicValueTypes.Java
+	
+ **b)Map of basic Values
+ 	Above we are saving multiple contacts but if u want to store one more ie key for each contact like Home, office
+ 	Then that time we need Map
+ 	Syntax is same as above with one more annotation because List<String> but here Map<String, String> 	
+ 	ie @MapKeyColumn
+ 	
+ 		@ElementCollection
+	@CollectionTable(name="user2_contacts",
+	joinColumns=@JoinColumn(name="id"))
+	@MapKeyColumn(name="type")
+	@Column(name="contact_no")
+	private Map<String, String> contacts = new HashMap<String,String>();
+	
+ **c)Collection of composite types 
+ 
+	
+	
