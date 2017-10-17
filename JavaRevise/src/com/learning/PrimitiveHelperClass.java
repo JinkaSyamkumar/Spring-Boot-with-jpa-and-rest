@@ -1,5 +1,5 @@
 package com.learning;
-
+// 2
 public class PrimitiveHelperClass {
 
 /*	Data Types OR Variables
