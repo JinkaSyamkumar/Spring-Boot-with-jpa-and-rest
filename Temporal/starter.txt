@@ -1,0 +1,16 @@
+@temporal helps with date insertions
+
+only when we use java.util to insert date
+
+no issue when we use java.sql package
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "datetime_column")
+	private Date datetime_column;
+	
+		@Column(name = "sql_datetime_column")
+	private java.sql.Timestamp sql_datetime_column;
+	
+@Transient is used to mark  a field not to relate with db table
+
+@Formula to compute values 
