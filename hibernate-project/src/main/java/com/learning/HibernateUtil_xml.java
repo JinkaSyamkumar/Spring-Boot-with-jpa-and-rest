@@ -22,6 +22,7 @@ public class HibernateUtil_xml {
 			//configuration.addAnnotatedClass(StudentDetails.class);
 			//return configuration.buildSessionFactory(
 			//								new StandardServiceRegistryBuilder().build());
+			configuration.configure();
 			return configuration.buildSessionFactory(
 							new StandardServiceRegistryBuilder()
 							.applySettings(configuration.getProperties())
