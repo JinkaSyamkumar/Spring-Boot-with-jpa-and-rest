@@ -451,6 +451,7 @@ Transversing Nested properties
 	
 	add spring-aspects
 	
-	
+********************hibernate*************************
+http://www.devglan.com/spring-boot/spring-boot-hibernate-5-example
 	
 	
