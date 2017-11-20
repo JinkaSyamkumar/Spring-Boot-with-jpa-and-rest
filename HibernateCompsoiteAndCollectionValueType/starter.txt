@@ -10,7 +10,7 @@ quick annotaton revise --
 3.@AttributeOverrides({@AttributeOverride(name="addressLine1",column=@Column(name="User_address_Line_1)),
 	@AttributeOverride(name="addressLine1",column=@Column(name="User_address_Line_1))})
 	
-1)Composite Value Type
+1)Composite Value Type - CompositeTypeUserEntity & AddressCompositeClass
 
 	
 Below is the Table structure
@@ -42,14 +42,15 @@ User entity has a field which is of Address data type SO HERE address type which
 Composite Value Types mean
 	*Represent a group of values(addressLine1,2,city) in a single java type(Address)
 	called Embedded(in JPA)/ called Composite Type in Hibernate
-	these are not entity only time they are persisted is when we save the parent entity
-			means they completely owned by the containing entities: 
-			they're modified when the entity is modified, 
-			deleted when the entity is deleted, etc.
-			 They can't have their own lifecycle.
-	Does not have an id or Table
-	Only persisted or queries in the context of its parent
-	Data is embedded in the source objects table
+	these are not entity.
+			Only time they are persisted is when we save the parent entity
+				means They completely owned by the containing entities: 
+					  They're modified when the entity is modified, 
+					  deleted when the entity is deleted, etc.
+			They can't have their own lifecycle.
+			Does not have an id or Table
+			Only persisted or queries in the context of its parent
+			Data is embedded in the source objects table
 
 2)Collection Value Types
 
@@ -100,14 +101,13 @@ so in Bank entity class , in order to use we need to override properties of addr
 That can be done with below
 	@AttributeOverrides({@AttributeOverride(name="addressLine1",column=@Column(name="User_address_Line_1)),
 	@AttributeOverride(name="addressLine1",column=@Column(name="User_address_Line_1))})
-	private Address address;
-	
+
 	CHECK
 	BANK.JAVA
 	
 2 - Details
 	
-**a) Collection of Basic Value types
+**a) Collection of Basic Value types 
 		mean collection of strings or 
 		set of long values or 
 		list of integers etc

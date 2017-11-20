@@ -115,6 +115,7 @@ public class MainController {
 	}
 	@GetMapping(value="/saveEcc")
 	public String saveEcc() {
+		System.out.println("**********A collection of composite value types*********************");
 		ElementCollectionCompositeTypes ec1 = new ElementCollectionCompositeTypes();
 		ec1.setId(1);
 		ec1.setName("syam");
