@@ -20,7 +20,7 @@ public class Application {
 	
 	public static void main(String[] args) {
 	//to load via hibernate.properties	
-/*		Session session = HibernateUtil_properties.getSessionFactory().openSession();
+		/*Session session = HibernateUtil_properties.getSessionFactory().openSession();
 		session.beginTransaction();
 		StudentDetails type = new StudentDetails();
 		type.setId(1);	
