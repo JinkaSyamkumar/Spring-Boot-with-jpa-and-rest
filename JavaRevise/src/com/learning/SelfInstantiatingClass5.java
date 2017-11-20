@@ -7,7 +7,7 @@ package com.learning;
  * @author syamkumarj
  *5
  */
-public class SelfInstantiatingClass {
+public class SelfInstantiatingClass5 {
 	//BELOW 3 ARE IMPORTANT
 	/*	INSTANCE VARIABLE
 	INSTANTIATION
@@ -31,7 +31,7 @@ public class SelfInstantiatingClass {
 		 * we need all 4 --> datatype , identifier , new , constructor method to perform instantiation
 		 * */
 
-		SelfInstantiatingClass sic = new SelfInstantiatingClass();
+		SelfInstantiatingClass5 sic = new SelfInstantiatingClass5();
 
 		sic.type="hello";
 		sic.display();	

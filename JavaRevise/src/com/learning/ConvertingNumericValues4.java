@@ -7,7 +7,7 @@ package com.learning;
  * @author syamkumarj
  * 4
  */
-public class ConvertingNumericValues {
+public class ConvertingNumericValues4 {
 
 	public static void main(String[] args) {
 	

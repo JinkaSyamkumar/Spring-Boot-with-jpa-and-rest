@@ -36,7 +36,7 @@ credentials
 	pwd
 
 	here user to credentials - unidirectional ie relation only from user to cred not the other way around
-	here cred has user id so it is source is cred and user is target entity
+	here cred has user id so source is cred and user is target entity
 	
 cascade=CascadeType.All mean when we persist cred entity , user entity also will be persisted.
 @JoinColumn - specifies the foreign key column on the cred entity and also when u look at from the db side to get cred we need to pass userid for the join ie what it is
@@ -75,3 +75,6 @@ ie empaddress.setUser(userObj);
    userObj.setEmpadress(empaddressObj)
    save(credentials)
 	
+3.mappedBy:The field that owns the relationship. This
+      * element is only specified on the inverse (non-owning)
+      * side of the association.

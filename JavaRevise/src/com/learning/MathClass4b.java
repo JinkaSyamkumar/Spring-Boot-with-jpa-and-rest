@@ -5,9 +5,9 @@ package com.learning;
 
 /**
  * @author syamkumarj
- *
+ * 4b
  */
-public class MathClass {
+public class MathClass4b {
 
 	//Math class is part of java.lang.math - so does not require any import - provided by default by java.lang
 	

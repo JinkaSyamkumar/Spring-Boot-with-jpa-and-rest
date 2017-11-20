@@ -1,6 +1,6 @@
 package com.learning;
 // 2
-public class PrimitiveHelperClass {
+public class PrimitiveHelperClass2 {
 
 /*	Data Types OR Variables
 	Variables - used to store data in memory
@@ -111,6 +111,13 @@ public class PrimitiveHelperClass {
 		}
 		System.out.println("condition"+b5);
 		
+		//how to start with a string and convert it to primtives using parse method
+		String s5 ="123";
+		//Now i want to convert it to primitive types, we use helper class
+		int fromString = Integer.parseInt(s5);
+		double d1 = Double.parseDouble(s5);
+		System.out.println("parsed from string to int - "+fromString);
+		System.out.println("parsed from string to double - "+d1);
 
 	}
 

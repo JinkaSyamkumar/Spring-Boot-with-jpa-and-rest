@@ -1,8 +1,10 @@
 
 package com.learning; //package declaration
 
+
+
 //1
-public class A_SimpleJavaClass { //class declaration
+public class A_SimpleJavaClass1 { //class declaration
 
 	
 	public static void main(String[] args) { //main method
@@ -15,6 +17,13 @@ public class A_SimpleJavaClass { //class declaration
 		
 		System.out.println();//executable body
 		System.out.println(Runtime.getRuntime().maxMemory());
+		
+		System.out.println(long.class.getPackage());
+		System.out.println(String.class.getPackage());
+	    System.out.println(Object[].class.getPackage());
+	   
+	    //int  i =2;
+	    //boolean true1= (i instanceof java.lang.Integer);
 	}
 
 }
