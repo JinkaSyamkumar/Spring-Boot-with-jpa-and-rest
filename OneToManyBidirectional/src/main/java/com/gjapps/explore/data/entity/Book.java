@@ -3,7 +3,6 @@
  */
 package com.gjapps.explore.data.entity;
 
-import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
