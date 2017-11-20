@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
  *
  */
 @Entity
-@Table(name="skillset")
+@Table(name="skillset5")
 public class SkillSet {
 	
 	@Id
