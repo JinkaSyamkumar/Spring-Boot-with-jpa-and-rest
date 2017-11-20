@@ -1,4 +1,4 @@
-Advanced Mapping and Configuration
+Aadvanced Mapping and Configuration
 	    Composite keys - every db uses surrogate keys and some uses natural keys 
 	    		and some times to make a unique key for a column we use multiple columns
 
@@ -99,7 +99,10 @@ Above table has (name, country_name) combination as pkey ie CONCATINATION OF nam
 			
 			Currency currency1 = (Currency) session2.get(Currency.class, new CurrencyId("RUPEES","INDIA"));
 
-B)Compound Join Columns 		
+B)Compound Join Columns 		- in above we got two primary keys so if we are going to map a foriegn key,
+ we need to map two keys, usually we map only one fkey
+ compund join talks about it
+
 	A compound join is a join containing several columns joining 
 	two tables. 
 	**Compound joins are useful where multiple columns 

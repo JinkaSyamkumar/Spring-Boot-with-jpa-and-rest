@@ -24,7 +24,9 @@ https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/
 	
 	
 	
-	1.Configuration - main goal of it is to tell hibernate how it should connect to db
+	Configuration - main goal of it is to tell hibernate how it should connect to db - 
+	
+	1.JAVA BASED Available in Application.java
 		
 		username,pwd,driver-class,url
 		a.get the configuration object
@@ -47,3 +49,5 @@ https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/
 						"jdbc:mysql://localhost:3306/ifinances");
 			}
 		});
+	2.properties based - verify HibernateUtil_properties and Application.java
+	2.xml based - verify HibernateUtil_properties and Application.java

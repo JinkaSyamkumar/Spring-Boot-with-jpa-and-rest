@@ -6,9 +6,9 @@
 	
 3 --> hibernate - api - seesion and transaction interfaces etc
 		deals with invoking persistence
-  		know as persistence manager api
+  		known as persistence manager api
   					has methods that manage crud operations and transactions
-  	    in hibernate-api,Session interface helps crud and also to manaage persistence lifecycle
+  	    in hibernate-api,Session interface helps crud and also to manage persistence lifecycle
   	    persistence lifecycle is different states our entities transition into and out of 
   	    		depending on entity persistence states we will define whether to sync or not with db
   	    		
@@ -30,7 +30,7 @@ Actions - ex - deposit(),purchase(), withdrawl()
 	Above actions performed on objects
 	
 Hibernate lifecycle
-	Object, ststes and actions
+	Object, states and actions
 	
 	See the diagram - Hibernate Lifecycle.png
 	
@@ -47,22 +47,32 @@ If u see diagram, those two are outside of persitence context(persistent & Remov
 (imp***)so any time , we are in those two states, we are not dealing with persistence context
 so when entity is in persistent context, we will have persistent & removed states
 
-1)Transient or New state - when object constructed with the new operator and constructor
-		that is not associated with any database row or there is no primary key associated with it
+1)Transient or New state - 1.when object constructed with the new operator and 
+						  2.constructor
+						  3.that is not associated with any database row 
+						  or 
+						  4.there is no primary key associated with it
 		(if you are actually run garbage collection as the object not associated with any it will be lost that kind of stae)
 
-2)Persistent - an entity instance associated with a database row and contained within a persistent context
-				, it has primary key associated with it
-				 and once it is in that state, we can perform all sorts of manipulation on that 
+2)Persistent - 		1.an entity instance associated with a database row and contained within a persistent context
+				,   2.it has primary key associated with it
+				 
+				 and once it is in that state, 
+				 		we can perform all sorts of manipulation on that 
+				 		
 				 entity like updating fields etc  THAT updation on entity will be tracked 
 				 and its state will be sent to db and persisted there.
-				 In order to get an object into persistent state we have 3 ways of doing i
+				
+				 In order to get an object into persistent state we have 
+				 3 ways of doing it
 				 a.we can save Transient state object and make it persistent
 				 b.also we query db and get an object ie also considered in persistent state
 				 c.we can refer to transient object from another persistent object so may be we could
 				   add transient object to a collection contained within an object that is in persistent state
+				   
 3)Removed - an object scheduled for deletion						
 				initially it will be in persistent state and we call action to remove it from persistent context
+				
 4)Detached - object references to an entity once associated  with a closed persistence context
 			is what happens when you have an object that is in persistent state however we closed
 			persistence context 	containing that object so the persistence context has been closed
@@ -70,7 +80,7 @@ so when entity is in persistent context, we will have persistent & removed state
 			at this particulat state, we call detached		
 
 **PERSISTENCE CONTEXT - what it is and what it does
-	PC is one of the object within lifecycle that we need to consider(entity is another object in lifecycle)
+	PC is one of the object within life cycle that we need to consider(entity is another object in lifecycle)
 	PC provides cache of all PERSISTENT entity instances
 		When u put entities into persistent state, all of the changes made to that entity
 		are held in the persistent context.
@@ -81,6 +91,9 @@ so when entity is in persistent context, we will have persistent & removed state
 	//And then we are querying another set of object,, again those objects will be placed in persistent context
 	//and if u make changes to them, persistent context will be aware of those changes
 	//and it is able to sync object model with db model
+	
+	transaction.commit();//causes our persistent context synchronize with db so all of our changes will be flushed to db
+	session.close();//**Close - closes Persistence Context 1
 	
 	SessionFactory factory = HibernateUtil.getSessionFactory();
 	Session session = factory.openSession();
@@ -340,14 +353,14 @@ Save()
 Saves the value to DB immediately and keeps track of the entity until the end of the session(I have tried to change the entity values outside of the transaction, it does not show any effect when session commits)
 Does not save the changes to the db outside of the transaction.
 Assigns the generated id to the entity you are persisting
-Session.save() for a detached object will create a new row in the table.
-Persist()
+****Session.save() for a detached object will create a new row in the table.
 
+Persist()
 Does not returns generated Id after saving. Its void return type. - GOOD WHEN WORKING WITH NATURAL KEYS
 Saves the value to DB immediately and keeps track of the entity until the end of the session.(I have tried to change the entity values outside of the transaction, it does not show any effect when session commits)
 Does not save the changes to the db outside of the transaction.
 Assigns the generated id to the entity you are persisting
-session.persist() for a detached object will throw PersistentObjectException as it is not allowed.
+****session.persist() for a detached object will throw PersistentObjectException as it is not allowed.
 	
 	
 	
