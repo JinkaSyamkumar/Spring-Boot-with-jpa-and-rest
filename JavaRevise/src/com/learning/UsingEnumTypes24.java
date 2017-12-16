@@ -42,6 +42,8 @@ public class UsingEnumTypes24 {
 		
 		System.out.println("Company value is -"+userModel1.getCompany());
 		
+		System.out.println(EnumClass.INFY);
+		
 		//**here if you see, values that are printed are uppercase
 		//check EnumClass.java
 		//Comment A block and uncomment B block

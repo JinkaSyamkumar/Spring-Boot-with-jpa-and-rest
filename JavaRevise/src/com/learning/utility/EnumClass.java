@@ -6,7 +6,7 @@ public enum EnumClass {
 
 	//2.vales added as simple list - separated by COMMA
 	//A
-	TCS,INFY;
+	//TCS,INFY;
 	
 	
 	
@@ -24,7 +24,7 @@ public enum EnumClass {
 	//****Every java class and enum has toString method
 	
 	//B
-	/*TCS("TCS ltd"),INFY("Infosys Ltd");
+	TCS("TCS ltd"),INFY("Infosys Ltd");
 	private String name;
 	
 	EnumClass(String name) {
@@ -34,6 +34,6 @@ public enum EnumClass {
 	@Override
 	public String toString() {
 		return name;
-	}*/
+	}
 	
 }

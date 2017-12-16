@@ -48,8 +48,16 @@ public class LoopingThroughWithIteratorNforEach16 {
 		//here it wont requires iterator object which is extra
 		//it is little bit efficient and takes less code
 		for (String string : list) {
+			//string="hello";
 			System.out.println(string);
 		}
+		
+//		System.out.println("test");
+//		for (String string : list) {
+//
+//			System.out.println(string);
+//		}
+		
 		
 		//***********THE MOST EFFIECIENT IN JAVA8 perf wise and also less code*******************
 		//apart from iterator and foreach, a *** new method introduced in JAVA8
