@@ -30,12 +30,17 @@ public class FlushingThePersistenceContext {
 			//put transaction.
 			
 			Account acc = (Account)session.get(Account.class, 10L);
-			acc.setHoldername("FLUSH");
+			acc.setHoldername("FLUSH4");
 			System.out.println("CALLING FLUSH");
 			session.flush();
 		
-			acc.setHolderbank("icici");
-			System.out.println("CALLING COMMIT");
+			acc.setHolderbank("icici4");
+			System.out.println("CALLING COMMIT"); 
+			//MODIFY ABOVE two values
+			//and uncomment below line
+			//for the second update - commt ie update query should be called only on at transaction.commit(); line
+			//but when you uncomment the below line..before issuing select, it calls update ..ie flush ..one of the the way that flush can happen see the etxt
+			//Account acc1 = (Account)session.get(Account.class,1L);
 			transaction.commit();
 			//console log verify
 			//so what happens with flush, instead of waiting till COMMIT

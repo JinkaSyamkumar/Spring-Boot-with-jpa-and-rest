@@ -22,8 +22,8 @@ public class ModifyingEntities {
 		try {
 			session.beginTransaction();
 			
-			Account acc = session.get(Account.class, 1L);
-			acc.setHoldername("UPDATED1");
+			Account acc = session.get(Account.class, 10L);
+			acc.setHoldername("UPDATED3");
 			
 			session.getTransaction().commit();
 		}catch(Exception e) {

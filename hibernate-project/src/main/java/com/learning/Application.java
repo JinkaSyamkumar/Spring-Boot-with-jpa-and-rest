@@ -29,7 +29,7 @@ public class Application {
 		session.close();*/
 		
 	//to load via hibernate.cfg.xml
-/*	Session session = HibernateUtil_xml.getSessionFactory().openSession();
+	Session session = HibernateUtil_xml.getSessionFactory().openSession();
 	session.beginTransaction();
 	
 	StudentDetails type = new StudentDetails();
@@ -39,12 +39,12 @@ public class Application {
 	
 	session.getTransaction().commit();
 	
-	session.close();*/
+	session.close();
 
 	
 	//to load via programmatic / javabased
 		/* Configuration */
-		Configuration configuration = new Configuration();
+/*		Configuration configuration = new Configuration();
 
 		configuration.addAnnotatedClass(StudentDetails.class);
 
@@ -61,12 +61,12 @@ public class Application {
 			}
 		});
 
-		/* Building SessionFactory */
+		 Building SessionFactory 
 		SessionFactory sessionFactory = configuration
 				.buildSessionFactory(new StandardServiceRegistryBuilder(
 						).applySettings(configuration.getProperties()).build());
 	
-		/* Obtain Session and Call Persistence Methods */
+		 Obtain Session and Call Persistence Methods 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		StudentDetails type = new StudentDetails();
@@ -76,7 +76,7 @@ public class Application {
 		
 		session.save(type);
 		session.getTransaction().commit();
-		session.close();
+		session.close();*/
 	
 	}
 

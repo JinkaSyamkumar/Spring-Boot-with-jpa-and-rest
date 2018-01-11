@@ -25,27 +25,29 @@ public class SaveEntities {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		//
-		SessionFactory factory = HibernateUtil.getSessionFactory();
-		
-		//open session - opens the Persistent Context
-		Session session = factory.openSession();
+
 
 		Account acc= new Account(); //Transient state
-		acc.setAccountno(3L);
+		acc.setAccountno(5L);
 		acc.setHoldername("Syam");
 		acc.setHolderbank("CITI");
 
 		Transact tr = new Transact();
-		tr.setId(6L);
+		tr.setId(8L);
 		tr.setInsertTime(new Date());
 
 		Transact tr1 = new Transact();
-		tr1.setId(7L);
+		tr1.setId(9L);
 		tr1.setInsertTime(new Date());
 
 		acc.getTransactions().add(tr);
 		acc.getTransactions().add(tr1);
 
+		SessionFactory factory = HibernateUtil.getSessionFactory();
+		
+		//open session - opens the Persistent Context
+		Session session = factory.openSession();
+		
 		//Persistent context created but entities not added yet
 		System.out.println("in Persistent context"+session.contains(acc));
 		System.out.println("in Persistent context"+session.contains(tr));

@@ -406,7 +406,7 @@ HQL - we have query interfaces - org.hibernate.Query
 		})
 		
 8.Lazy loading
-		when u have one to many relatiion or etch defined another entity, i pulls by default
+		when u have one to many relation or fetch defined another entity, it pulls by default
 		to prevent and pull when needed lazy helps
 		
 		by default it is set to EAGER - PULLS everything
