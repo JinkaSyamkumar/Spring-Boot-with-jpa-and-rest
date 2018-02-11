@@ -77,4 +77,5 @@ ie empaddress.setUser(userObj);
 	
 3.mappedBy:The field that owns the relationship. This
       * element is only specified on the inverse (non-owning)
-      * side of the association.
+      * side of the association.modify
+modify
