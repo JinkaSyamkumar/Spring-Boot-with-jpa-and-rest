@@ -3,6 +3,7 @@
  */
 package com.learning.apitest.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ import com.learning.apitest.vo.ProductItemVO;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 
 /**
  * @author syamkumarj
@@ -35,7 +37,7 @@ public class RefController {
 	
 	@GetMapping(value="/getupcs")
 //	public List<ProductItemVO> getUPCs(){
-	@ApiOperation(value="Get All UPCs", notes="View a list of UPCs", nickname="Get All UPCs1")
+	@ApiOperation(value="Get All UPCs", notes="View a list of UPCs", nickname="Get All UPCs1", authorizations = {@Authorization(value="basicAuth")})
 		public List<ProductItemVO> getUPCs(@RequestParam(value="param1", required=false)String param1,
 				@RequestParam(value="param2", required=false)String param2,
 				@RequestParam(value="param3", required=false)String param3){
@@ -46,9 +48,8 @@ public class RefController {
 		return refService.getUPCs().stream().map(t -> toVO(t)).collect(Collectors.toList()); 
 		
 	}
-	
-	
-	
+	   
+
 	private ProductItem verifyValues(String param1, String param2, String param3) {
 		
 		verifyParam1(param1);
