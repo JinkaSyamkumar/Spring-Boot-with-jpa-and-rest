@@ -172,7 +172,7 @@ application.groovy file
 		application.properties - only *** this should have
 			spring.profiles.active
 			
-			and if a propert found at both app.prop and 
+			and if a property found at both app.prop and 
 				env specific app.prop - preference goes to env specific app.prop  
 			
 			and if u extra props in app.props that will be appended to env specific props

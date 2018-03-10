@@ -149,7 +149,7 @@ String operators - Like adds like predicate - like'syam'
 
 Transversing Nested properties
 	
-	//in relation mapping we will have nexted properties ex
+	//in relation mapping we will have nested properties ex
 	//ex employee has skillsets , and skillset has its own fields
 	//skillset by id- ie transversiong relation
 	//check in employeerepo.java
@@ -426,6 +426,36 @@ Transversing Nested properties
 					extends BaseRepository<Employee, String> {
 		
 		8.add calling method main class
+		
+		
+*************************************spring data rest ------------------
+
+along with pring-boot-starter-data-jpa, if u include spring-boot-starter-data-rest , we get automatic HATEOAS for the repository classes
+
+and if u search just with 
+	localhost:8080 , u get all the links to methods
+
+check APITEST project...
+
+if repositoy name is MyRead ..URL WILL BE localhost:8080/myRead
+
+and if u have other methods written findBy{PropName} or other methods ..u can search with localhost:8080/myRead/search ..will list all methods of that repo
+
+and also url by default gets repository name and if u want to hide that name and expose different name use below annotation on top repo class
+
+@RepositoryRestResource(collectionResourceRel="myApp", path="myApp")
+
+	import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+	@RepositoryRestResource(collectionResourceRel="efeatures", path="efeatures")
+		public interface RefRepo extends JpaRepository<ProductItem, Integer> {
+		
+		
+And if u expose repo..people will have access to delete and save also ..to restrict access to that
+	
+	@Override
+	@RestResource(exported=false)
+	<S extends T>S save(S s);
 
 **********************Async Queries**********************
 	
