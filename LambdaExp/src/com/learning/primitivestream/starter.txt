@@ -1,0 +1,13 @@
+##4
+
+In addition to streams discussed in ##3 com.nielsen.stream, it also includes special streams for primitive types
+
+	1)Int Stream
+	2)Long Stream
+	3)Double Stream
+	
+Primitive streams use specialized lambda expressions as well like IntFunction instead of Function, IntPredicate instead of Predicate etc
+
+Primitive streams support additional terminal operations apart from what we discussed in #3
+	sum
+	average

@@ -27,7 +27,7 @@ public class Employee {
 	@Column(name="name")
 	private String name;
 	
-	@OneToOne(mappedBy="employee",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	@OneToOne(mappedBy="employee")
 	@JsonBackReference
 	private EmpAddress empAddress;
 	

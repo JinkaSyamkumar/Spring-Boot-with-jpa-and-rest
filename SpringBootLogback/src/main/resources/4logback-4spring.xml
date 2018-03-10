@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+	<appender name="CONSOLEOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+		<pattern>%d [%thread] %-5level %logger{10} : %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="FILEOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log.txt</file>
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{10} : %msg%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>log_%i.txt</fileNamePattern>
+			<minIndex>1</minIndex>
+			<maxIndex>3</maxIndex>
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<maxFileSize>1KB</maxFileSize>
+		</triggeringPolicy>
+	
+	</appender>	
+	<logger name="com.example.demo.controller" level="DEBUG" additivity="true">
+		<appender-ref ref="FILEOUT"></appender-ref>
+	</logger>
+	<root level="INFO" >
+		<appender-ref ref="CONSOLEOUT"></appender-ref>
+	</root>
+
+</configuration>

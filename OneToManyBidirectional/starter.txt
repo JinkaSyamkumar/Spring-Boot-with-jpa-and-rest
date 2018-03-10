@@ -1,0 +1,192 @@
+Entity Associations
+	provide mapping metadata for various associations
+	Map collections of entity types
+	understand bidirectional n unidirectional relationships
+	
+Relationship/association 
+Owning Entity/Non Owning Entity - JoiColumn /JoinTable
+	Owning entity will have foreign key column
+	Above statement is true only for Bidirectional but it is not true in Unidirectional
+Source Object/Target Object - one table column specified as foreign key on the other table, first is Target, second is the source
+
+Entity Associations - reference from one entity to other
+				    - mapped to underlying db tables 
+1)One To One - one account has one set of credentials 
+2)One To Many - one account has many txions
+3)Many to one - from txions to account
+4)Many to Many - multiple users can be associated with many accounts - like wife and husband
+
+#1)Unidirectional One To One
+
+User to credentials
+
+user
+	user_id
+	name
+	age
+	crete_by
+	create_date
+	update_by
+	update_date
+
+credentials
+	cred_id
+	user_id
+	username
+	pwd
+
+	here user to credentials - unidirectional ie relation only from user to cred not the other way around
+	here cred has user id so it is source is cred and user is target entity
+	
+cascade=CascadeType.All mean when we persist cred entity , user entity also will be persisted.
+@JoinColumn - specifies the foreign key column on the cred entity and also when u look at from the db side to get cred we need to pass userid for the join ie what it is
+
+public class cred {
+...
+@OneToOne(cascade=CascadeType.ALL)
+@JoinColumn(name="user_id")
+
+}
+
+#2)One To One - Bi directional
+	
+if a table has foreign key then that table is source table and it will have @joinColumn
+
+like above , but in the target as well, 
+in target u specify how the target is mapped by in source on source variable
+
+so owning entity - having fkey - will have joinColumn
+   non owning entity - will have mappedBy 
+     
+	in Employee class
+	..
+	@OneToOne(mappedBy="employee"f)
+	private EmpAddress empAddress;
+	
+	in EmpAddress class 
+	....
+	@OneToOne(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	@JoinColumn(name="emp_id")
+	private Employee employee;
+	
+	we should not specify joinColumn and cascade on the inverse side.only one join column side it should be mentioned
+	and also we need to maintain the addition on both sides
+	ie empaddress.setUser(userObj);
+   userObj.setEmpadress(empaddressObj)
+   save(credentials)
+	
+	#3)One To Many - Uni directional Relation without intermediate JOIN TABLE in db
+	Account --> Transactions -  only one side
+	Account can have many transactions 
+	so account_id is mapped in transactions table
+	****here transactions has fkey , so ideally it is owning entity and should get JoinColumn BUT THATS WRONG
+	as it is unidirectional ie trasaction will be only saved through Account entity
+	so all the annotations goes to account entity
+	@JoinColumn is placed in Account entity itself on transaction variable declaration.
+	
+	ACCOUNT Table					Transactions Table
+		id - account_no					transaction_id
+		holder_name						account_no
+		holder_bank						insert_date
+	 as it say one to many it means it will have collection of transactions
+	 put that in Account entity
+	 
+	 List<transact> txions 
+	 
+	 and on top of it we mention @joincolumn annotation
+	 
+	 and also we mention cascade
+	 
+	 Account{
+		.....
+			@OneToMany
+			@JoinColumn(name="account_no",nullable=false)
+			private List<Transact> transactions = new ArrayList<Transact>();
+		....
+		
+	No annotation specification on transact side
+	
+		****nullable=false without this u get run time error
+		we need it bcoz every txion requires account no
+		and also we are doing uni directional relation we are mapping inverse side of it so
+		it causes fkey column on transaction table to fail
+		To work around is to use nullable=false
+		by default in one to many nullable will be true
+		we need to make it fasle it works
+		
+		without cascade we get below error when trying to save
+		javax.persistence.EntityNotFoundException: Unable to find com.learning.demo.entity.Transact with id 23243
+		
+#4)One To Many - Bi directional Relation without intermediate JOIN TABLE in db
+		Account <--> Transactions 
+			Account can have many transactions so @OneToMany in Account Entity
+			Transactions - many can be in a sinle account so @ManyToOne in Transaction entity
+
+		In trasactions entity -> we add an object for Account not list since it is many transactions to one account
+		and also since it is bi directional and source
+			and it has fkey, it gets @joincolumn annotation
+
+			@ManyToOne
+			@JoinColumn(name="account_no")
+			private Account acc;
+	
+			@OneToMany(cascade=CascadeType.ALL,mappedBy="acc")
+			private List<Transact> transactions = new ArrayList<Transact>();
+	
+		Account acc= new Account();
+		acc.setAccountno(12345L);
+		acc.setHoldername("Syam");
+		acc.setHolderbank("CITI");
+		//unlike onetomany - here we need to set account on trasactions and trasaction object on account
+		//ie we need to manage on both sides as it is bi directional
+		Transact tr = new Transact();
+		tr.setId(23243L);
+		tr.setInsertTime(new Date());
+		tr.setAcc(acc);
+		
+		//here i am not setting on tr1 but i am adding to account in next block
+		Transact tr1 = new Transact();
+		tr1.setId(23245L);
+		tr1.setInsertTime(new Date());
+		
+		//here without adding acc, we are saving
+		acc.getTransactions().add(tr);
+		acc.getTransactions().add(tr1);
+		
+		in db, in trasactional db, for first tr - account no will appear
+		but for second tr, account no will be blank
+		so we need to maintain on both sides
+		Transact tr1 = new Transact();
+		tr1.setId(23245L);
+		tr1.setInsertTime(new Date());
+		tr1.setAcc(acc);
+	
+	#4)JOIN TABLE
+		Alternative method of mapping one to many
+		
+		owning side - in case of one to many with join table
+		owning side is the one with @Jointable annotation that entity column will be put
+		on joinColumns = @JoinColumn(name="") here we use the clumn name of entity that is hosting it
+		
+		UNI DIRECTIONAL 
+			@OneToMany(cascade=CascadeType.ALL)
+			@JoinTable(name = "emp4_skill1", 
+			   joinColumns = @JoinColumn(name = "emp_id"), 
+			   inverseJoinColumns = @JoinColumn(name = "skill_id"))
+			private List<SkillSet> skillSets;
+			
+		BI DIRECTIONAL
+				@ManyToOne(cascade= CascadeType.ALL,fetch = FetchType.EAGER)
+				@JoinColumn(name="book_category_id")
+				@JsonBackReference
+				private BookCategory bookCategory;
+				
+				@OneToMany(mappedBy="bookCategory",cascade=CascadeType.ALL,fetch = FetchType.EAGER)	
+				@JsonBackReference
+				private Set<Book> books;
+				
+		#5)Many To Many - Uni directional
+		
+	 
+	 
+	 

@@ -13,7 +13,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="skillset")
+@Table(name="skillset_1")
 public class SkillSet {
 
 	@Id

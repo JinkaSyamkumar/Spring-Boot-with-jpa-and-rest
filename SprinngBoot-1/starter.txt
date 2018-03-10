@@ -1,0 +1,325 @@
+
+BOOT Principles
+	Reduce the amount of work for spring developers -  to use spring platform
+	Convention over configuration
+	Reasonable defaults that are easily customized - when u use boot for spring data jpa , it auto picks orm provider as hibernate
+	Dependency Management without names and versions
+	No code generation or XML
+	
+Technical Approach --    
+					to achieve Principles
+	Automatic Configuration
+	Starter POMs and Dependencies
+	Executable Jars
+	Embedded containers - jar contains everything that it needs to run
+	Build tool integration - maven or gradle
+	
+Usage options
+	STS
+	Spring Boot Command Line Interface - download spring boot cli from spring site
+	Spring Initializer - web page online
+	
+groovy is a powerful optionally 	typed dynamic language for java platform.runs against jvm
+makes coding faster 
+
+application.groovy file
+
+	@RestController
+	class HellowWorld {
+		
+		@RequestMapping(value="/hello")
+		def hi(){
+		return "hello"
+		}
+	
+	}
+	
+	use spring-cli to run , spring run application.grrovy - no config ntng, spring understands and builds
+	
+***************Spring Boot Manual Configuration***********************************
+
+	
+	Maven Project
+		select simple project
+	pom.xml
+		parent pom - org.springframework.boot - starter parent - starter pom contains preconfigured dependencies
+	dependencies
+		
+		
+		
+		@EnableAutoConfiguration - with this spring auto detects congigurations
+			
+	application.properties
+	
+	Reading props  from app.props to java
+	1.reading custom props from app.properties to  java
+	2.@value("${name}")
+	  String name;
+	3.in app.props --> name=applicationCheck
+	
+	Reading props  within app.props
+	1.app.prop --> type =framework
+	2.app.prop --> name = spring ${type}   
+	
+	
+	************Additional Bean configuration***********************
+	1.create new class in base package --> BeanConfigurations
+	2.add @Congiguration
+		@Configuration
+		public class BeanConfigurations {
+	
+			@Bean
+			public ModelMapper modelMapper() {
+			return new ModelMapper();
+			}
+		}
+	3.add @Import in main class
+
+		@Import(BeanConfigurations.class)
+		public class SprinngBoot1Application {
+			@Autowired
+			private ModelMapper modelMapper;
+		}
+		
+	4.If you have multiple configurations, u can add 
+		@ComponentScan() - scans all packages
+		
+	All 3 and 4 - above can take care by @SpringBootApplication on MAIN CLASS - base classes hsould have necessary annotation
+	
+	@SpringBootApplication is equal to
+		    @EnableAutoConfiguration
+			@ComponentScan
+			@Configuration
+		
+	
+	
+	********************Advanced Configuration****************************
+	Create random configuration value
+	Use profiles to conditionally select configuration
+	inject properties from external files
+	execute tasks upon startup of a spring boot application
+	
+	profiles
+		create a class (no annotations) - MyMessage.class , create methods
+		
+		create a class ApplicationConfiguration and add annotation @Configuration
+			@Configuration
+			public class ApplicationConfiguration {
+		
+		add a property that gets random string value in app.prop - mymessage.value=${random.value}
+		
+		create a method ApplicationConfiguration
+				public MyMessage myMessage(@Value("${mymessage.value}") String messageValue) {
+					MyMessage myMessage = new MyMessage();
+					myMessage.setMyMessage(messageValue);
+					return myMessage;
+				}
+		annotate the method with @Bean
+		
+		create a new method but name it as myMessageDev
+			@Bean
+			public MyMessage myMessageDev(@Value("${mymessage.value}") String messageValue) {
+				MyMessage myMessage = new MyMessage();
+				myMessage.setMyMessage(messageValue+"Dev");
+				return myMessage;
+			}
+	
+	**Now add @Profile annotation
+	@Bean
+	@Profile("prod")
+	public MyMessage myMessage(@Value("${mymessage..... etc
+	
+	@Bean
+	@Profile("dev")
+	public MyMessage myMessageDev(@Value("${mymessage.value}
+	
+	
+	now add spring.profiles.active=dev
+	
+	and add to main class
+	
+		@Autowired
+		private MyMessage myMessage;
+	
+	and access the method
+	
+	
+	---
+	u can have
+		application.properties
+
+	
+	and to read it from run tmes
+		u can go to run configurations
+		and add --spring.profiles.active=prod
+	
+	when u have runtime config, it wont read profile attribute from application.properties
+	
+				application-dev.properties
+	
+	****
+	environment specific props
+	
+		u can have ur props 
+		like 
+		application-${spring.profile.active}.properties
+	
+	so create
+		application-dev.properties - env specific props
+		application-dev.properties - env specific props
+		
+		and
+		application.properties - only *** this should have
+			spring.profiles.active
+			
+			and if a property found at both app.prop and 
+				env specific app.prop - preference goes to env specific app.prop  
+			
+			and if u extra props in app.props that will be appended to env specific props
+	
+	***Properties to JAVA class
+	
+	we can assign properties from prop file to java properties
+	2 WAYS
+A) 1 WAY reading from same app.prop
+	1.add below properties
+		file.name=export file
+		file.mail=sy@gmail.com
+		file.port=7878
+	 
+	 2.create a new class - @ConfigurationProperties(prefix="file")
+	 
+	 @ConfigurationProperties(prefix="file")
+		public class PropCheck {
+
+			private String name;
+			private String mail;
+			private String port;
+	 
+		
+	3.Come to the main class and add - @EnableConfigurationProperties(value=PropCheck.class)
+			
+			@EnableConfigurationProperties(value=PropCheck.class)
+			public class SprinngBoot1Application {
+	
+			@Autowired
+			private PropCheck propcheck;
+			
+	4.access its values
+	
+			@RequestMapping(value="/propCheck")
+			public String propCheck() {
+	
+			return "Name --- " + propcheck.getName()+"---"+ propcheck.getMail()+"----";
+			}
+			
+			***if u don't want to keep @EnableConfigurationProperties(value=PropCheck.class)
+			we can add @Component on top of 
+				@Component
+				@ConfigurationProperties(prefix="file")
+				public class PropCheck {
+			
+B).2 WAY IS Reading from external prop file
+		
+			1.Create a file.properties and add below properties
+				file.name=export file
+				file.mail=sy@gmail.com
+				file.port=7878
+	 
+		 2.create a new class - @Component - with this no need to add @EnableConfigurationProperties on main class
+		 		add @PropertySource("classpath:file.properties")
+	 
+	 			@Component
+				@PropertySource("classpath:file.properties")
+				@ConfigurationProperties(prefix="file")
+				public class FilePropCheck {
+
+					private String name;
+					private String mail;
+					private String port;
+					
+		3.not required like above
+		4.same
+			
+			***DONT HAVE SAME PREFIX in application.properties and other properties file
+		
+	
+	*********************Execute code at start up***************************
+	useful	
+		Everytime application starts u want to send a mail
+				or
+		u want to pppulate some values/properties or other start up activity
+		
+		1.create a class and it should implement CommandLineRunner
+		
+		2.we have also ApplicationRunner interface
+	
+	
+	
+	Web
+	
+	--Explore auto-configured features
+	--Configure templating technologies
+	--Version static resources
+	--switch and customize embedded container
+	--Register container components
+	-Programatically configure embedded containers
+	
+	
+	spring-boot-starter-web - contains web.xml and dispatcher servlet configurations
+	
+	-----------------
+	server.address=dashboard
+	server.port=9090
+	server.context-path:/app
+	
+	server.compression.enabled=true
+	server.compression.min-response-size=0
+	
+	http://dashboard:9090/app
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

@@ -1,0 +1,506 @@
+Advanced Mapping and Configuration
+	    Composite keys - every db uses surrogate keys and some uses natural keys 
+	    		and some times to make a unique key for a column we use multiple columns
+
+	we learn about mapping 
+	composite keys and its associations
+	Enumerations
+	Inheritance - ploymorphism
+	Persistence Layers
+	Complex queries
+	Schema generation
+	
+Composite Key
+	A primary key that made up of more than one attribute is known as a composite key.
+	Example - [ EMPLOYEE_ID and EMPLOYEE_SSN_ID ] can together be treated as 
+		(one of) composite keys. 
+		Another combination can be [ EMPLOYEE_ID, EMPLOYEE_SSN_ID and EMPLOYEE_DEPT_ID ]
+
+Surrogate Key (Surrogate dictionary meaning is some other will provide for u i.e identity / sequence)
+	Surrogate keys are keys that have no business meaning and 
+	are solely used to identify a record in the table.
+
+	Such keys are either database generated (example:
+		 Identity in SQL Server, Sequence in Oracle, Sequence/Identity in DB2 UDB etc.) or 
+		 system generated values (like generated via a table in the schema).
+		 
+Check this for more types of keys
+	https://social.msdn.microsoft.com/Forums/sqlserver/en-US/27bd9c77-ec31-44f1-ab7f-bd2cb13129be/surrogate-keys-natural-keys-candidate-keys-composite-keys-and-super-keys?forum=sqlgetstarted
+			 	 
+When designing a database to support applications you need to consider how you are going to handle primary keys.
+   There are two schools of thought, or maybe three.  
+   		1.There are those that say primary keys should always be a MADE UP KEY(IDENTITY/SEQUENCE), or what is commonly called a SURROAGATE key. 
+   		2. Others say there are good reasons to use REAL DATA as a KEY value; this type of key is known as NATURAL key.  
+   		3.The third group is those that design their databases so their primary keys are a combination of NATURAL and SURROGATE keys. 
+
+Always prefer SURROGATE KEYS if possible
+
+A)Composite keys
+	
+	CREATE TABLE public.currency
+(
+    name text COLLATE pg_catalog."default" NOT NULL,
+    country_name text COLLATE pg_catalog."default" NOT NULL,
+    symbol text COLLATE pg_catalog."default",
+    CONSTRAINT currency_pkey PRIMARY KEY (name, country_name)
+)
+
+Above table has (name, country_name) combination as pkey ie CONCATINATION OF name and country_name gives unique primary key
+	why not single column as pkey? in the above US has dollar, canada has dollar , individual can not do the pkey
+	so combination produces us-dollar, canadadollar as unique
+	
+	Both composite key and compound key describe a candidate key with more than one attribute. According to the Relational Database Dictionary (C.J.Date) they mean the same thing.
+
+
+1.Add @Id on both fields forming pkey in Currency.java Entity
+	
+	@Entity
+	@Table(name="currency", schema="public")
+	public class Currency {
+		@Id
+		@Column(name="name")
+		private String name;
+	
+		@Id
+		@Column(name="country_name")
+		private String countryName;
+
+2.copy those fields (alt+cmd+t) forming compund key
+	Create a new package com.learning.ids
+	Create a new class CurrencyId.java - 	CurrencyId.java is pure java class, no annotations
+	Add those two fields - names in CurrencyId should match with names in Currency entity
+	Add getters - no setters , setters work will be done by constructor
+	Create default constructor
+	Create constructor with the fields
+	**implement Serializable interface - required by JPA as market to mark a class holding ids
+
+3.Come back to Currency.java entity class
+	Add annotation - @IdClass(value=CurrencyId.class)
+			@Entity
+			@Table(name="currency", schema="public")
+			@IdClass(value=CurrencyId.class)
+			public class Currency {	
+ 
+ with above 3 steps we successfully mapped concatenated natural keys
+ Check App.java
+ 
+ save -- the usual way
+ 			session.beginTransaction();
+			
+			Currency currency = new Currency();
+			currency.setCountryName("INDIA");
+			currency.setName("RUPEES");
+			currency.setSymbol("R");
+			
+			session.persist(currency);
+			
+**Retrieval -- here is where tricky and currencyid will be our savior
+			get expects one id but ours combination of two keys 
+			
+			Currency currency1 = (Currency) session2.get(Currency.class, new CurrencyId("RUPEES","INDIA"));
+
+B)Compound Join Columns 		
+	A compound join is a join containing several columns joining 
+	two tables. 
+	**Compound joins are useful where multiple columns 
+	generate a unique key to join to another table. 
+	Sometimes a relational database has a unique key, 
+	which is a combination of two or more columns
+
+Table can have compound key ie multiple columns forming pkey with
+	multiple @Id annotation
+	ie ok but what if u want to associate that entity with another entity
+
+We have Currency.java with multiple @Id , now i want to associate it with Market
+now we want to associate currency with market
+**To have it Market must have these two columns forming pkey in currency table
+and then rest is like normal oneToMany or OneToOne or any relation mapping
+
+a currency can be mapped to many markets
+so in markets we have @ManyToOne tag
+
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumns({
+		@JoinColumn(name="CURRENCY_NAME", referencedColumnName="NAME"),
+		@JoinColumn(name="COUNTRY_NAME", referencedColumnName="COUNTRY_NAME")
+	})
+	private Currency currency;
+
+C)Enumerations	- @Enumerated(EnumType.STRING)
+	how to store enumeration in db with hibernate
+	
+	Account class has
+		enumeration type
+		private AccountType accountType;
+	
+	Where AccountType is
+		public enum AccountType {
+			SAVINGS,
+			CHECKING
+		}
+	
+	1.Create enum class
+	2.Add enum class refrence to its target 
+	3.add @Column annotation with related column name in db just like before
+			@Column(name="account_type")
+			private AccountType accountType;
+	4.execute the save
+			tx = session.beginTransaction();
+			Account account = new Account();
+			account.setAccountType(AccountType.SAVINGS);
+			session.save(account);
+	
+	when u check in db, accountType column value will be saved as 0
+	WHY?
+		0 is basically the value of enum of SAVINGS
+		HOW TO SAVE VALUE INSTEAD OF ENUM VALUE??
+		to resolve follow below
+	5****.add @Enumerated(EnumType.String) annotation
+	
+		@Enumerated(EnumType.STRING)
+		@Column(name="account_type")
+		private AccountType accountType;
+
+D)Mapped Superclass Inheritance
+
+suppose u have two classes - Student & Professor with below properties
+
+	Student 				& 			Professor
+		-student_id					prof_id
+		-name						name
+		-dob							dob
+		-email						email
+		-joined						exp
+	
+	so if u see , student and professor has 3 similar properties
+	here we can make use of inheritance
+	
+	1.Create ABSTRACT class as CommonProps.java - why abstract? normal also works but with abstract no body tries to instantiate this-GOOD PRACTICE
+		add common props 
+			@Column(name="name")
+			private String name;
+	
+			@Column(name="dob")
+			private Date dob;
+	
+			@Column(name="email")
+			private String email;
+	2.Add getters and setters for it in ommonProps.java
+	3.Create student.java and professor.java with remaining props and corresponding setters and getters for it
+	4.**Makesure Student and Professor extends commonprops class
+	5.ADD VALUES AND SAVE
+			Student stud = new Student();
+			stud.setName("syam");
+			stud.setEmail("s@gmail");
+			stud.setDob(new Date());
+			stud.setAddress("chennai");
+			*session.save(stud);
+			
+			Professor professor = new Professor();
+			professor.setName("syam");
+			professor.setEmail("s@gmail");
+			professor.setDob(new Date());
+			professor.setExp(4);
+			*session.save(professor);
+	6.when u run , u get ERROR -  Failing row contains (3, null, null, null, chennai).
+	7.***ADD @MappedSuperclass
+			public abstract class CommonProps {
+
+@MappedSuperclass - MAKES HIBERNATE RECOGNIZES THIS CLASS AS SUPER CLASS
+IT WORKS but
+BUT we have certain limitations such as 1. the super class can not be an ENTITY
+	AND 2. also if u want pull both student and prof to be fetched in the same query- then
+		mappedsuperclass is NOT for you
+		
+E)Table Per Class Inheritance	& SINGLE TABLE INHERITANCE
+
+	oneTomany, manytoone etc all relations deals with separe entities
+	there is no inheritance in it
+	but if u have inherited eentities and at the same time u want to have one entity for super class
+	this topic helps	
+	
+	@Entity
+	@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+	public abstract class Investment
+	
+	and also we need to use Table generator , we can not use sequence/identity generator
+	when using Table per class inheritance
+	
+	
+	****NEED TO CHECK AGAIN ***********
+inheritance is good in object model but in relational db it does not exist
+hibernate tries to provide it but it does union which burdens performance
+but nevertheless check three videos
+
+
+****VIEWS*** - Views are mapped just like entities
+and fetched but one thing to remember is it will have auto generated id
+but dont map it as generated column just map it like normal
+
+@Id
+@Column(name="user_id)  
+
+***SCHEMA GENERATION*****
+TO CREATE TABLES FOR DEVELOPMENT, NOT FOR PRODUCTION
+	
+	auto generating tables
+		hibernate.hbm2ddl.auto = create - drop everything and creates everything
+							  = validate - checks if all tables there , if not throws error
+							  = update - checks all the tables, if not creates it
+							  = create-drop - creates all tables and once application stopped it drops all
+	and no need to drop a sql file  , it reads from entities and creates
+
+*****Hibernate Query Language (HQL) & Java Persistence Query language (JPQL)
+ works similar to sql queries but the diff is
+ 	hql/jpql goes against entity model instead of data model (tables, fields etc)
+ 	
+ 	1.	Learn how to retrieve entities via HQL/JPQL queries
+ 	2.	Explore the interfaces supporting query execution -  to execute queries we need hibernate api/jpa api
+ 	3.	Discover query capabilities provided by functions and expressions 
+	
+	queries in jpql/hql almost same except interfaces	    	
+	
+	**HQL is superset of JPQL - see image HQL vs JPQL	 
+		means anything u can do jpql can be done in hql but not reverse
+
+1.Writing Queries	- App_hql.java	   	
+		    	learning to write hql and jpql queries
+		    	
+HQL - we have query interfaces - org.hibernate.Query 
+	
+	**Notes************************************************************
+	
+	org.Hibernate.query
+		An object-oriented representation of a Hibernate query. 
+		A Query instance is obtained by calling Session.createQuery(). 
+		This interface exposes some extra functionality beyond that provided by Session.iterate() and Session.find():
+
+			A particular page of the result set may be selected by calling setMaxResults(), setFirstResult()
+			named query parameters may be used
+			the results may be returned as an instance of ScrollableResults
+
+			Named query parameters are tokens of the form :name in the query string.
+				A value is bound to the integer parameter :foo by calling setParameter("foo", foo, Hibernate.INTEGER);
+				for example. A name may appear multiple times in the query string.
+			
+			JDBC-style ? parameters are also supported. To bind a value to a JDBC-style parameter use a set method that accepts an int positional argument (numbered from zero, contrary to JDBC).
+			
+			You may not mix and match JDBC-style parameters and named parameters in the same query.
+
+	**Queries are executed by calling list(), scroll() or iterate(). A query may be re-executed by subsequent invocations. 
+			**Its lifespan is, however, bounded by the lifespan of the Session that created it.
+			
+	************************************************************
+	
+		Query query = session.createQuery("select t from Transaction t");
+	
+		select t from Transaction t - means pull every field in transaction
+	
+		all the queries related to entities, not like db sql
+		call .list() to fetch details
+		
+		query to fetch details will be issued after calling .toList() method
+		
+		along with just select, we can bind parameters and set pagination on query object
+		
+	(CHECK JPQL - example em.createQuery("from SingleTable t order by t.name", SingleTable.class..)
+						query.getResultList();
+						)
+					
+2.Expressions and Operators	
+	App1_hql.java
+	
+	to query 
+		adding where predicate and operator
+					Query query = session.createQuery("select s from SingleTable s "
+					+ "where s.id>1 ");
+		and we can logical operator
+	** and to put strings use single quotes ''
+				Query query = session.createQuery("select s from SingleTable s "
+					+ "where s.id>1 and s.name='kumar' ");
+					
+	(in JPQL - em.createQuery("from SingleTable t where t.id > 2 order t.name", SingleTable.class);
+			query.getResultList();
+			)
+	more details
+		https://docs.jboss.org/hibernate/orm/3.3/reference/en/html/queryhql.html#queryhql-expressions
+		
+3.Parameters
+	
+	a**.positional with setParameter
+		passing params helpful in passing user inputs
+		replace all invalues in query with jdbc like ?
+		Query query = session.createQuery("select s from SingleTable s "
+					+ "where s.id=? ");
+			
+		System.out.println("Specify input id");
+			
+		query.setParameter(0, new Integer(scanner.next()));
+	
+	setParameter takes int value starting from 0
+	0 mean - it sets value to first ?
+	1 mean to next ?
+	
+	b**.named parameter
+	
+	//Named with setParameter takes names instead
+			Query query2 = session.createQuery("select s from SingleTable s "
+					+ "where s.id=:id ");
+			
+			System.out.println("Specify input id");
+			
+			query2.setParameter("id", new Integer(scanner.next()));
+			
+	here setParameter takes name not position 0,1,2
+	
+4.Joins
+	App3_hql.java		
+	
+	example shows creating query without JOIN keyword
+	we have employess and skillsets and we are going to pull skillsets for employees 
+	
+	Query query = session.createQuery("SELECT e.skillSets FROM Employee e "
+					+ "WHERE e.id='JINKSY04'");
+	
+	we have not used any join keyword
+	above generates 
+		select skillset2_.tech_id as tech_id1_3_, skillset2_.tech_name as tech_nam2_3_ from employee4 employee0_ inner join emp4_skill1 skillsets1_ on employee0_.emp_id=skillsets1_.emp_id inner join skillset_1 skillset2_ on skillsets1_.skill_id=skillset2_.tech_id where employee0_.emp_id='JINKSY04'
+		
+	same if u want explicit join as well
+	
+5.Functions
+		we can use functions to perform complex queries against db
+		String hql = "SELECT count(distinct E.firstName) FROM Employee E";
+		Query query = session.createQuery(hql);
+		List results = query.list();
+
+6.Pagination using query
+		String hql = "FROM Employee";
+		Query query = session.createQuery(hql);
+		query.setFirstResult(1);
+		query.setMaxResults(10);
+		List results = query.list();
+		
+		or
+		check below for criteria
+	
+7.Named Queries - App3_hql.java
+	helps to organize our queries
+	1.copy the query
+	2.and go to entity that u r pulling from
+	3.on top of entity add the below annotations	
+		@Entity
+		@Table(name="skillset_1")
+		@NamedQueries({
+			@NamedQuery(name="get_skills", query="SELECT e.skillSets FROM Employee e  WHERE e.id='JINKSY04'"
+		)})
+		public class SkillSet {
+		
+	4.and in main method access it like
+		//Named queries
+			Query query =session.getNamedQuery("get_skills");
+
+/// u can have as many as u want
+	@Entity
+		@Table(name="skillset_1")
+		@NamedQueries({
+			@NamedQuery(name="get_skills", query="SELECT e.skillSets FROM Employee e  WHERE e.id='JINKSY04'"),
+			@NamedQuery(name="get_etc", query="SELECT e.skillSets FROM Employee e  WHERE e.id='JINKSY04'")
+		})
+		
+8.Lazy loading
+		when u have one to many relatiion or etch defined another entity, i pulls by default
+		to prevent and pull when needed lazy helps
+		
+		by default it is set to EAGER - PULLS everything
+		
+		for some it is set to EAGER and some relation it is set to LAZY
+		verify and set accordingly
+		
+		***fecth=fetchType.LAZY
+		
+		DETAILS WILL BE PULLED ONLY AFTER OBJ.GETlAZYOBJECT
+		AT THIS MOMENT DATA WILL BE FETCHED
+		
+***********CRITERIA - API**********************		 - above we wrote queries but with criteria it is programmatic ie java
+Hibernate & JPA Criteria APIs
+
+	Provides alternative way to query entities from db
+		1.Explore the Hibernate & JPA criteria APIs
+		2.Apply filters to criteria queries
+		3.Paginate query results
+
+Criteria API 
+	Allows complex queries to be created programmatically via the
+	Criteria (Hibernate) and CriteriaQuery(JPA) interfaces
+	
+	very helpful for writing dynamic queries
+	 when u have serach criterias from a form with hql we need put to conditions and concatenate the final query
+	 and also if some typo in query, it leads to runtime error
+	 these are something that can be avoided by criteria api
+
+	JPA Criteria API provides typesafe queries
+
+	A)Simple selections - App_hql.java
+		Query query = session.createQuery("select s from SingleTable s");
+		equivalent is
+			Criteria criteria = session.createCriteria(SingleTable.class);
+			criteria.addOrder(Order.desc("name"));
+			List<SingleTable> ss = criteria.list();	
+			 or
+			everything can be put into single line
+			List<SingleTable> ss =session.createCriteria(SingleTable.class).addOrder(Order.desc("name")).list();
+			
+			list() - method gets the data
+			
+			u can pull single unique record also
+			with
+			SingleTable sb = (SingleTable)criteria.uniqueResult();
+			System.out.println(sb.getName());	 
+	
+	B)Restrictions - App_restrictions.java
+			helps to narrow down the result like putting where clause
+			provided by restrictions
+			 ie putting criterias on criteria
+		
+		to create we use Criterion interface - org.hibernate.criterion.Criterion
+			An object-oriented representation of a query criterion that may be used 
+			as a restriction in a Criteria query. 
+			Built-in criterion types are provided by the Restrictions factory class. 
+		
+		1.create criterion
+						Criterion criterion1 = Restrictions.le("id", 2); - le - lessthanequal
+						Criterion criterion2 = Restrictions.eq("name", "syam"); - eq - equal
+		
+		2.create Criteria
+						Criteria criteria = session.createCriteria(SingleTable.class);
+		
+		3.USE ** add method on criteria to add criterions
+						Criteria criteria = session.createCriteria(SingleTable.class)
+								.add(criterion1)
+								.add(criterion2)
+								.addOrder(Order.desc("name"));
+	
+	   4.Above we used add multiple times, instead - Restrictions.and(criterions) /Restrictions.or()/between/conjuction/disjunction/alleq/etccc
+	   				Criteria criteria1 = session.createCriteria(SingleTable.class)
+					.add(Restrictions.and(criterion1,criterion2))
+					.addOrder(Order.desc("name"));
+	
+	C)Pagination - App_pagination.java
+	
+		int pageNumber = 3;
+		int pageSize = 4;
+
+		try {
+			factory = HibernateUtil.getSessionFactory();
+			session = factory.openSession();
+			tx = session.beginTransaction();
+
+			Criteria criteria = session.createCriteria(SingleTable.class)
+					.addOrder(Order.asc("title"));
+			criteria.setFirstResult((pageNumber - 1) * pageSize);
+			criteria.setMaxResults(pageSize);
+		    	
+		    	
+		    	
+		    	

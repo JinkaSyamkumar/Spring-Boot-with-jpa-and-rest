@@ -1,0 +1,21 @@
+##2
+
+Collections api is inroduced in JAVA7
+A collection is a group of elements - They can store,retrieve , manipulate and communicate and can aggregate the data.
+
+Collection api has following interfaces
+	1)Set - a collections that does not contain duplicates.
+	2)List - an ordered collection
+	3)Map - an object that maps keys to values
+	
+Collection Interface has methods that does basic operations 
+ex
+	int size() - returns size of collection
+	boolean isEmpty() - returns true/false
+	boolean contains(Object element) - checks if an element exists and returns true/false 
+	boolean add(E element) - adds element and returns true/false
+	boolean remove(Object element) - removes element , returns true and if element not found, returns false
+	Iterator<E> iterator() - provides iterator 
+	
+	n JAVA 8, preferred way of iterating over a collections is to use Stream and aggregator on it --> shown in the example class
+	

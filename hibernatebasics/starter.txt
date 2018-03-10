@@ -1,0 +1,49 @@
+https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/
+3 main items that must be in place to work hibernate properly 
+	1.Configuration - can be specified via 3 ways
+		a.properties file - hibernate.properties 
+		b.xml configuration file -hibernate.cfg.xml-  most preferred way
+		c.through java code or programmatic configuration.
+	(main diff is bw a n b, in a we can only specify connection properties
+	we can not map resources(entities) but in xml config we can do both)
+	2.Building Session Factory
+		when we need to persist , it will obtain singleton session factory from the hibernate util class
+		using singleton session factory, it can obtain session
+		session basically an interface between our application and hibernate.
+		session is the one that helps to perform diff persistence operations
+		
+		we need to provide a singleton instance of session factory
+		so start with private static final
+		
+		it will throw many exceptions so on high level try catch with Exception e
+	
+	3.Obtain session and begin transaction and call Persistence methods
+	  and create entity and call save/any and  close transaction
+	
+	
+	
+	
+	
+	1.Configuration - main goal of it is to tell hibernate how it should connect to db
+		
+		username,pwd,driver-class,url
+		a.get the configuration object
+		b.register the annotated classes - must register mapping metadata with configuration
+		  metadata basically helps hibernate to construct sql queries and persist the object
+		c.set the propertes
+			/* Configuration */
+			
+		a->.Configuration configuration = new Configuration();
+
+		b->.configuration.addAnnotatedClass(StudentAccount.class);
+
+		c->.configuration.setProperties(new Properties() {
+			{
+				put("hibernate.connection.username", "infinite");
+				put("hibernate.connection.password", "skills");
+				put("hibernate.connection.driver_class",
+						"com.mysql.jdbc.Driver");
+				put("hibernate.connection.url",
+						"jdbc:mysql://localhost:3306/ifinances");
+			}
+		});

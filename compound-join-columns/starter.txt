@@ -1,0 +1,138 @@
+Aadvanced Mapping and Configuration
+	    Composite keys - every db uses surrogate keys and some uses natural keys 
+	    		and some times to make a unique key for a column we use multiple columns
+
+	we learn about mapping 
+	composite keys and its associations
+	Enumerations
+	Inheritance - ploymorphism
+	Persistence Layers
+	Complex queries
+	Schema generation
+	
+Composite Key
+	A primary key that made up of more than one attribute is known as a composite key.
+	Example - [ EMPLOYEE_ID and EMPLOYEE_SSN_ID ] can together be treated as 
+		(one of) composite keys. 
+		Another combination can be [ EMPLOYEE_ID, EMPLOYEE_SSN_ID and EMPLOYEE_DEPT_ID ]
+
+Surrogate Key (Surrogate dictionary meaning is some other will provide for u i.e identity / sequence)
+	Surrogate keys are keys that have no business meaning and 
+	are solely used to identify a record in the table.
+
+	Such keys are either database generated (example:
+		 Identity in SQL Server, Sequence in Oracle, Sequence/Identity in DB2 UDB etc.) or 
+		 system generated values (like generated via a table in the schema).
+		 
+Check this for more types of keys
+	https://social.msdn.microsoft.com/Forums/sqlserver/en-US/27bd9c77-ec31-44f1-ab7f-bd2cb13129be/surrogate-keys-natural-keys-candidate-keys-composite-keys-and-super-keys?forum=sqlgetstarted
+			 	 
+When designing a database to support applications you need to consider how you are going to handle primary keys.
+   There are two schools of thought, or maybe three.  
+   		1.There are those that say primary keys should always be a MADE UP KEY(IDENTITY/SEQUENCE), or what is commonly called a SURROAGATE key. 
+   		2. Others say there are good reasons to use REAL DATA as a KEY value; this type of key is known as NATURAL key.  
+   		3.The third group is those that design their databases so their primary keys are a combination of NATURAL and SURROGATE keys. 
+
+Always prefer SURROGATE KEYS if possible
+
+A)Composite keys
+	
+	CREATE TABLE public.currency
+(
+    name text COLLATE pg_catalog."default" NOT NULL,
+    country_name text COLLATE pg_catalog."default" NOT NULL,
+    symbol text COLLATE pg_catalog."default",
+    CONSTRAINT currency_pkey PRIMARY KEY (name, country_name)
+)
+
+Above table has (name, country_name) combination as pkey ie CONCATINATION OF name and country_name gives unique primary key
+	why not single column as pkey? in the above US has dollar, canada has dollar , individual can not do the pkey
+	so combination produces us-dollar, canadadollar as unique
+	
+	Both composite key and compound key describe a candidate key with more than one attribute. According to the Relational Database Dictionary (C.J.Date) they mean the same thing.
+
+
+1.Add @Id on both fields forming pkey in Currency.java Entity
+	
+	@Entity
+	@Table(name="currency", schema="public")
+	public class Currency {
+		@Id
+		@Column(name="name")
+		private String name;
+	
+		@Id
+		@Column(name="country_name")
+		private String countryName;
+
+2.copy those fields (alt+cmd+t) forming compund key
+	Create a new package com.learning.ids
+	Create a new class CurrencyId.java - 	CurrencyId.java is pure java class, no annotations
+	Add those two fields - names in CurrencyId should match with names in Currency entity
+	Add getters - no setters , setters work will be done by constructor
+	Create default constructor
+	Create constructor with the fields
+	**implement Serializable interface - required by JPA as market to mark a class holding ids
+
+3.Come back to Currency.java entity class
+	Add annotation - @IdClass(value=CurrencyId.class)
+			@Entity
+			@Table(name="currency", schema="public")
+			@IdClass(value=CurrencyId.class)
+			public class Currency {	
+ 
+ with above 3 steps we successfully mapped concatenated natural keys
+ Check App.java
+ 
+ save -- the usual way
+ 			session.beginTransaction();
+			
+			Currency currency = new Currency();
+			currency.setCountryName("INDIA");
+			currency.setName("RUPEES");
+			currency.setSymbol("R");
+			
+			session.persist(currency);
+			
+**Retrieval -- here is where tricky and currencyid will be our savior
+			get expects one id but ours combination of two keys 
+			
+			Currency currency1 = (Currency) session2.get(Currency.class, new CurrencyId("RUPEES","INDIA"));
+
+B)Compound Join Columns 		- in above we got two primary keys so if we are going to map a foriegn key,
+ we need to map two keys, usually we map only one fkey
+ compund join talks about it
+
+	A compound join is a join containing several columns joining 
+	two tables. 
+	**Compound joins are useful where multiple columns 
+	generate a unique key to join to another table. 
+	Sometimes a relational database has a unique key, 
+	which is a combination of two or more columns
+
+Table can have compound key ie multiple columns forming pkey with
+	multiple @Id annotation
+	ie ok but what if u want to associate that entity with another entity
+
+We have Currency.java with multiple @Id , now i want to associate it with Market
+now we want to associate currency with market
+**To have it Market must have these two columns forming pkey in currency table
+and then rest is like normal oneToMany or OneToOne or any relation mapping
+
+a currency can be mapped to many markets
+so in markets we have @ManyToOne tag
+
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumns({
+		@JoinColumn(name="CURRENCY_NAME", referencedColumnName="NAME"),
+		@JoinColumn(name="COUNTRY_NAME", referencedColumnName="COUNTRY_NAME")
+	})
+	private Currency currency;
+	
+
+
+
+
+
+
+		    	

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+
+	<appender name="CONSOLEOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{10} : %m%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="FILEOUT" class="ch.qos.logback.core.FileAppender">
+		<file>log.txt</file>
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{10} : %m%n</pattern>
+		</encoder>
+		<append>true</append>
+	</appender>
+	
+	<logger name="com.example.demo.controller" level="DEBUG"
+		additivity="true">
+		<appender-ref ref="FILEOUT" />
+	</logger>
+	
+	<root level="INFO">
+		<appender-ref ref="CONSOLEOUT" />
+	</root>
+	
+</configuration>

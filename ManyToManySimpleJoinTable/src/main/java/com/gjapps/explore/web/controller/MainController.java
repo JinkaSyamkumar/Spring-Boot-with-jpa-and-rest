@@ -33,8 +33,8 @@ public class MainController {
 	@GetMapping(value="/save")
 	public String save() {
 		
-/*		//#1 saving through employee object
- * 		Employee objEmp = new Employee("JINKSY09","kumar");
+		//#1 saving through employee object
+ /*		Employee objEmp = new Employee("JINKSY09","kumar");
 		
 		SkillSet skillset1=new SkillSet(7, "JAVA");
 		SkillSet skillset2=new SkillSet(8, "UNIX");

@@ -1,0 +1,39 @@
+##3
+
+java.util.stream
+
+	This package contains majority of classes and interfaces for using streams.
+	It is not part of io stream it is different , newly introduced in java 8
+	
+	A stream represents a sequence of elements
+	
+	The stream package was added to traverse collections
+	
+	Most stream operations take a lambda expression
+	
+Stream operations are either intermediate or terminal
+
+	Terminal operations are either void or return a type
+	Intermediate operations return the stream itself
+	
+	Intermediate operations are useful to chain multiple message calls in a row on a single stream
+
+Commonly used operations include 1)map
+								2)filter
+								3)foreach
+Two more commonly used are 4)sorted
+						   5)collect									
+								
+Terminal operations - foreach
+					- collect - transform elements of a stream into different kind of result
+
+Intermediate operations - map - one value to other
+					    - filter - to filter the results using predicate
+					    -sorted - returns sorted view of the stream but REMEMBER original collection wont be altered
+					    
+ELEMENTS IN A COLLECTIONS CAN NOT BE CHANGED OR MUTATED WITH STREAM BUT CAN BE SAVED TO A NEW COLLECTIONS IF THATS WHAT U NEED.				    
+
+							
+
+						   
+						  						

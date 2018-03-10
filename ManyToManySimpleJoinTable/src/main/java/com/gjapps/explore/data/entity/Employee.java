@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
  *
  */
 @Entity
-@Table(name="employee")
+@Table(name="employee5")
 public class Employee {
 	@Id
 	@Column(name="emp_id")
@@ -29,7 +29,7 @@ public class Employee {
 	private String name;
 	
 	@ManyToMany(cascade=CascadeType.ALL)
-	@JoinTable(name="emp_skill",
+	@JoinTable(name="emp5_skill5",
 	joinColumns=@JoinColumn(name="emp_id"),
 	inverseJoinColumns=@JoinColumn(name="skill_id"))
 	@JsonBackReference

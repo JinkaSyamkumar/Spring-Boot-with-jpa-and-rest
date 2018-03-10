@@ -1,0 +1,487 @@
+Course:Spring data for java developers 
+By:Infinite skills
+safaribooksonline.com 
+			
+
+Why spring Data
+	Reduces the amount of errort required to build a persistence layer
+	Establishes a predictable approach to data access  
+	Accommodates access to multiple data stores
+	Evolution of data persistence in Java applications -evolution --> jdbc --> orm --> jpa --> patterns(dao) --> rest api --all these packaged into one
+	
+Spring Data JPA basics
+(Spring data mongo)
+Spring Data Rest
+
+Prerequisites
+	java
+	xml
+	Spring Core
+	ORM
+	
+************Spring Data Introduction***************************
+
+**Overview
+	traditional approach of jdbc and evn orm like hibernate are
+		more complex than they should be in - persisting entities to db table
+		
+	Thats really key point for Spring Data ie simplifying data persistence
+
+	**Spring Data features**
+		Motivation
+		 behind creating spring data eventhough many sophisticated orms available in open market
+			1.Improve how java developers access data - to do that below were done
+				a.Simplify the configuration to access data stores
+				b.provide a generic spring-based approach to accessing data - repository interface
+				c.preserve data store specific features - so for ex if u r using jpa for relational db u can still use jpql
+				d.facilitate data access via browser-based communication by rest api
+		 
+		 Features - that allows to accomplish above motivations
+		 	Repositories to connect data stores(relation,nosql,hadoop etc) and domain model(pojo/entities)
+		 	Derived queries based upon method signatures - name of the mthod produces qury
+		 	Built-in paging and sorting capabilities
+		 	Configuration facilitators
+		 	Spring MVC Integration
+		 	Consistent approach to data layers
+		 	
+	**Core Features**
+		 main concept is 
+		 	*domain objects* - have several names - entities/pojos
+		 	basically they are objects related to business area we are working with
+		 	like u have a businees of books each book will have certain prop, that grouped forms domain object
+		 	
+		 	*Services* - we work with domain objects in services - perform all of the business work of app, manages domain objects like modifying, creating, deleting and managing
+		 	
+		 	*Repositories* - allow us to persist , SERVICES managed DOMAIN OBJECTS/entity instances into data store
+		 	
+		 	also we have controllers
+		 	
+		 	Crudrepo/jparepo/pagingandsortingrepo
+		 	
+		 	derived queries
+		 		List<person> findByFirstName(String firstName)
+		 		equals to
+		 		select p from person p where p.firstName=?
+		 		
+		 		core components that make up spring data project
+		 			1.application.properties
+		 			2.SprinngData1Application.java - @SpringBootApplication - 
+		 				this annotation provides inspect starter project within pom and pull lot of dependencies and- This is a convenience
+ 							* annotation that is equivalent to declaring {@code @Configuration},
+ 							* {@code @EnableAutoConfiguration} and {@code @ComponentScan}.
+					3.Entity class
+					4.BookRepo extends JPARepository<Book,Long>	
+					
+				in this example, we try to pull data without controller and @autowired annotation
+		 	 
+**Spring Data JPA Configuration************
+	different ways to configure - SPRING BOOT
+	
+**REPO 
+	WE CAN FETCH MULTIPLE with
+				List<Book> books = repo.findAll(new ArrayList<Long>(){{
+							add(1L);
+							add(3L);
+							add(7L);
+							}});
+		 
+									repo.save() - saves n updates
+		 
+		 .delete() - deletes
+		 .delete(repo.findAll(new ArrayList<Long>(){{
+							add(1L);
+							add(3L);
+							add(7L);
+							}}));
+		.repo.deleteAllIBatch(); - deletes everything in repo entity
+		 
+Derived Queries		 
+		 findByTitle(String title)
+		 findByPrefix
+		 	prefix is the property in the entity
+
+String operators - Like adds like predicate - like'syam'
+				-  Containing - is like clause with wild card surrounding - like '%sy%'
+				
+		findByTitleLike(String title)	
+		findByTitleContaining(String title)	 = findByNameLike("%syam%")
+		findByTitleStartingWith(String title) = findByNameLike("syam%")
+		findByTitleEndingWith(String title)   = findByNameLike("%syam")
+		findByTitleIgnoreCase(String title)  
+	
+//Relational Operators, = > < >= <= !=
+	public List<SingleTable> findByIdEquals(int id);
+	public List<SingleTable> findByIdGreaterThan(int id);
+	public List<SingleTable> findByIdLessThan(int id);
+	public List<SingleTable> findByIdGreaterThanEqual(int id);
+	public List<SingleTable> findByIdLessThanEqual(int id);
+	public List<SingleTable> findByIdBetween(int idMin, int idMax);
+	
+//Logical Operators - helps to work with multiple conditions - allows to connect two or more, And , Or
+	//Or
+	public List<SingleTable> findByNameContainingOrNameContaining(String name1,String name2);//checking for two name
+	//And
+	public List<SingleTable> findByIdAndNameContaining(int id,String name2);
+	//Negate
+	public List<SingleTable> findByIdNot(int id);
+	
+//Date Comparisons
+/*	public List<SingleTable> findByDob(Date date);
+	public List<SingleTable> findByDobAfter(Date date);
+	public List<SingleTable> findByDobBefore(Date date);
+	public List<SingleTable> findByDobBetween(Date date1, Date date2);*/
+	
+//Ordering Results - based on keywords
+	public List<SingleTable> findByIdLessThanOrderByNameAsc(int id);
+	public List<SingleTable> findByIdLessThanOrderByNameDesc(int id);
+	
+//Limiting Query Results - First and Top - to limit the results returned
+	//Top and First - same
+	public List<SingleTable> findTopByOrderByNameAsc();
+	public List<SingleTable> findFirstByOrderByNameAsc();
+	//if u want to pass the count
+	//Top5BY and First5By
+	public List<SingleTable> findTop3ByOrderByNameAsc();
+	public List<SingleTable> findFirst3ByOrderByNameAsc();
+	//with diff columns
+	public List<SingleTable> findTop3ByIdOrderByNameAsc(int id);
+	public List<SingleTable> findFirst3ByNameOrderByIdAsc(String name);
+
+Transversing Nested properties
+	
+	//in relation mapping we will have nested properties ex
+	//ex employee has skillsets , and skillset has its own fields
+	//skillset by id- ie transversiong relation
+	//check in employeerepo.java
+	//findBySkillSetsTechName
+	//first it will check for SkillSetsTechName
+	//but there is no such property so it will split with diff combinations
+	//SkillSets TechName and finally it tranverses and maps
+	
+	public List<Employee> findBySkillSetsTechName(String techName);
+	
+	//above might be confusing - to make it more clear
+	//we can use _ to indicate nested property
+	
+	public List<Employee> findBySkillSets_Id(int techId);
+	
+	
+******Additional Query Techniques*****************
+	Execute JPQL queries with spring data
+	sort query results using method arguments
+	page query results using method arguments
+	return query results using various java types
+	
+	****************@Query**************************
+	Spring data query annotation to manually define jpql query
+	 1.we place @Query annotation on the repo method
+	 //Query annotation
+ 	@Query("select e from Employee e")
+ 	public List<Employee> queryOne();
+ 	
+ 	2.passing positions with ?1, ?2, ?3
+ 	//supplied argument - ?1
+ 	@Query("select e from Employee e where e.id=?1")
+ 	public List<Employee> queryTwo(String id);
+ 	
+ 	3.with named parameters
+ 	//avoid positional parameter instead use named parameter
+ 	@Query("select e from Employee e where e.id=:id")
+ 	public List<Employee> queryThree(@Param("id") String id);
+	
+	****************Named Queries*******************
+	
+	instead of writing @query on method we can write it on Entity
+	
+	1.go to entity and write @NamedQuery()
+	2.add name --> value is entity.repo method
+		@NamedQuery(name="Employee.queryFour")
+	3.add query string 
+		@NamedQuery(name="Employee.queryFour", query="select e from Employee e")
+	4.write similar if u have any
+	5.place all inside
+		@NamedQueries({})
+		
+		@NamedQueries({
+		@NamedQuery(name="Employee.queryFour", query="select e from Employee e"),
+		@NamedQuery(name="Employee.queryFive", query="select e from Employee e where e.id=?1"),
+		@NamedQuery(name="Employee.querySix", query="select e from Employee e where e.id=:id")})
+		
+	6.comeback to repo, methods will be with errors
+		dont worry about those errors. continue
+		 	//Named Queries
+ 			public List<Employee> queryFour();
+ 			public List<Employee> queryFive(String id);
+ 			public List<Employee> querySix(@Param("id") String id);
+	
+	$$$$PREFER @QUERY INSTEAD OF @NamedQuery$$$$$
+	
+	****************Paging Results*******************
+	learn how to page results in this section
+	
+	PagingAndSortingRepository - has several methods to accomplish this
+	
+	1)need 2
+		1.which page you want
+		2.how many results u would want to see
+		
+		a.use Pagerequest - takes two inputs - new PageRequest(0, 2)
+			i.page - starts from 0
+		   ii.no ofresults
+		   
+		   employeeRepo.findAll(new PageRequest(0, 2)).
+				forEach(s -> System.out.println("Paging Results - "+s));;
+	2)Another way is to
+		
+ 	//another way is if u want put condition like find all ids greater 10 in pagination
+ 	//   or suppose u have lot of books and u need show books with greater than 200 pages in pagination
+ 	//in this case we need construct a condition.
+ 	//such is below method
+ 	public List<Employee> findByIdGreaterThan(String id, Pageable pageable);
+ 	
+	employeeRepo.findByIdGreaterThan("JINKSY04",  new PageRequest(0, 2))
+		.forEach(s -> System.out.println("Paging Results - conditional -"+s));
+		
+	**makesure u r importing springframework pageble and pagerequest classes not java.awt*****
+	
+	****************Sorting Results*******************
+	learn how to sort results in this section
+	
+	PagingAndSortingRepository - has several methods to accomplish this
+			//Sorting Results
+		//default
+		employeeRepo.findAll(new Sort("id")).
+				forEach(s -> System.out.println("Sorting Results - sinle property - "+s));;
+		//sort by direction(asc) and property
+		employeeRepo.findAll(new Sort(Direction.ASC,"id")).
+				forEach(s -> System.out.println("Sorting Results - direction ASC and single property "+s));;
+		//direction (desc) and property
+		employeeRepo.findAll(new Sort(Direction.DESC,"id")).
+						forEach(s -> System.out.println("Sorting Results - direction DESC and single property "+s));;
+		//direction and multiple props
+		employeeRepo.findAll(new Sort(Direction.DESC,"name","id")).
+						forEach(s -> System.out.println("Sorting Results - direction and multiple properties "+s));;
+		//direction and multiple props - nested
+		employeeRepo.findAll(new Sort(Direction.DESC,"skillSets.techName","id")).
+						forEach(s -> System.out.println("Sorting Results - direction and multiple properties "+s));;
+		//we can add multiple sorts 
+		employeeRepo.findAll(new Sort(Direction.DESC,"skillSets.techName").and(new Sort(Direction.DESC,"id"))).
+						forEach(s -> System.out.println("Sorting Results - multiple sorts with AND- "+s));;		
+		
+		//Conditional
+		public List<Employee> findByIdGreaterThan(String id, Sort sort);
+		
+		employeeRepo.findByIdGreaterThan("JINKSY04", new Sort(Direction.DESC,"id") )
+						.forEach(s -> System.out.println("Paging Results - conditional -"+s));
+						
+		****************Query Method Return Types*******************				
+	Repository is using multiple data types to return results
+	
+	changing to Collection<Employee> works and also Iterable<Employee> works
+	dont just cast it to list
+	because example Page type several inbuilt methods 
+	public Page<Employee> findByIdGreaterThan(String id, Pageble pageble);
+	page.etcmethods - very helpful
+	
+
+	 //Different return types
+ 	 public Page<Employee> findByNameGreaterThan(String id, Pageable pageable);
+ 	
+		Page<Employee> page = employeeRepo.findByNameGreaterThan("JINKSY04",  new PageRequest(0, 2));
+		long totalElements= page.getTotalElements();
+		int totalPages= page.getTotalPages();
+		System.out.println("totalElements - "+totalElements+"-totalPages-"+totalPages);
+		
+	similarly we have Slice
+		//slice
+		System.out.println("slice--------------");
+		Slice<SingleTable> slices = srepo.findById(1, new PageRequest(0, 2));
+		slices.getContent().forEach(s -> System.out.println("get content"+s));
+		System.out.println("slices.getNumber();"+slices.getNumber());
+		System.out.println("slices.getNumberOfElements();"+slices.getNumberOfElements());
+		System.out.println("getSize"+slices.getSize());
+		
+		System.out.println("getSort");
+		//slices.getSort().forEach(s -> System.out.println("get content"+s));	
+		System.out.println("hascontent"+slices.hasContent());
+		
+		System.out.println("hasNext"+slices.hasNext());
+		
+		System.out.println("hasPrevious"+slices.hasPrevious());
+		
+		System.out.println("isFirst"+slices.isFirst());
+		
+		System.out.println("isLast"+slices.isLast());
+		
+		System.out.println("nextpageble"+slices.nextPageable());
+		System.out.println("nextpageble"+slices.previousPageable());
+	
+	
+***********************Advanced Spring Data JPA Techniques**************************
+	how to use spring data to create better performing application
+	and how to encapsulate some of our custom defined logib
+	Not used frequently but better know
+	we learn about
+		**how to provide custom repository behaviour - when u can not achieve by existing
+		**Execute queries asynchronously - ajax - how one triggers one task and main continues its own task - parallel manner - optimises our logic
+		**Automate entity auditing - so as we modify our entity, to keep track of who done what, it helps
+		**Modifying entities using manually defined queries - define a query and how it modifies entity - reverse
+		
+	****Customizing Repository Behavior - LOCAL**************	
+	Locally - 	
+		define a new method and provide custom implementation method and then we migrate it into our repository
+		1.create a new repository - SingleTableRepoCustom.java - naming is important check below guidelines
+		2.Create a method that saves singleTable entity
+		3.create a new class that implements above interface - name it as - SingleTableRepoImpl.java
+		**and annotate with @Repository annotation
+		4.write implementation for save method defined in interface
+				 **add 	@Override @Transactional   - 		 **@Transactional must without this u get error Caused by: javax.persistence.TransactionRequiredException: No EntityManager with actual transaction available for current thread
+		5.autowire entity manager
+		6.add Transactional on top of method implementation
+		7. add logic that does saving SingleTable details
+			
+			8.next step attaching this to SingleTableRepo - standard - add with comma separated
+				that way our stanadard class has to implement custom repo methods
+	 
+	***usual - public interface SingleTableRepo extends CrudRepository<SingleTable, Integer>
+  **modified - public interface SingleTableRepo extends CrudRepository<SingleTable, Integer>, SingleTableCustomRepo  - added SingleTableCustomRepo
+	
+	VERY VERY IMP
+		Spring data mongo works on naming convention of the classes. 
+		If your repository interface is named 						XXXRepository, 
+			then your custom Repository interface should be named as XXXRespositoryCustom (RepositoyName + Custom) 
+			and your implementation class should be named as 			XXXRepositoryImpl. Only then your custom implementations will be read.
+	
+	****Customizing Repository Behavior - Global**************	
+	above is for class level, what if u want on every repository class?which provides code reuse
+	below is how
+		
+		1.create a new repository - BaseRepository<T, ID extends Serializable> 
+			and also it should extends JpaRepository
+			
+			public interface 
+				BaseRepository<T, ID extends Serializable> 
+					extends JpaRepository<T, ID> {
+
+			will be used to declare methods that will be shared across all repo
+			
+			**Its important to remember this repository should not be made into
+			actual repository implementation
+			
+			so annotate it this with - @NoRepositoryBean
+			@NoRepositoryBean
+			public interface BaseRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
+			
+			
+		2.Create all methods that will be shared across - use return type as T
+			List<T> findByIds(ID...id)
+			
+		3.create a new class that implements above interface - name it as - 
+				public class 
+					ExtendedRepositoryImpl<T, ID extends Serializable> {
+					**and annotate with @Repository annotation
+		
+		4.it should extend - SimpleJpaRepository<T, ID>
+		
+			public class 
+				ExtendedRepositoryImpl<T, ID extends Serializable> 
+					extends SimpleJpaRepository<T, ID> {}
+		
+		5.It should implement our BaseRepository<T, ID>
+		
+			public class 
+				ExtendedRepositoryImpl<T, ID extends Serializable> 
+					extends SimpleJpaRepository<T, ID> 
+						implements BaseRepository<T, ID>{
+		
+		- ONLY MAIN CLASS SHOULD HAVE ID EXTENDS SERIALIZABLE, REMAINING <T , *ID>
+		
+		6.You will get error saying to implement methods. as we are extending and implementing
+			- to fix 
+				a.	private JpaEntityInformation<T,?> entityInformation;
+					private EntityManager entityManager;
+				b.auto fix method and add constructor variables
+					public ExtendedRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
+					super(entityInformation, entityManager);	
+					this.entityInformation=entityInformation;
+					this.entityManager=entityManager;
+					}
+				c.override the base repo methods
+					@Override
+					//@Transactional
+					public List<T> findByIds(ID... ids) {
+						Query query = this.entityManager.createQuery("select e from " + this.entityInformation.getEntityName() 
+						+ " e where e." + this.entityInformation.getIdAttribute().getName() + " in :ids");
+						query.setParameter("ids", Arrays.asList(ids));
+							return (List<T>) query.getResultList();
+						}
+			
+		7.Go to your repository class
+			change it 
+			from 
+				public interface EmployeeRepo 
+					extends JpaRepository<Employee, Integer>,etc
+			To
+				public interface EmployeeRepo 
+					extends BaseRepository<Employee, String> {
+		
+		8.add calling method main class
+		
+		
+*************************************spring data rest ------------------
+
+along with pring-boot-starter-data-jpa, if u include spring-boot-starter-data-rest , we get automatic HATEOAS for the repository classes
+
+and if u search just with 
+	localhost:8080 , u get all the links to methods
+
+check APITEST project...
+
+if repositoy name is MyRead ..URL WILL BE localhost:8080/myRead
+
+and if u have other methods written findBy{PropName} or other methods ..u can search with localhost:8080/myRead/search ..will list all methods of that repo
+
+and also url by default gets repository name and if u want to hide that name and expose different name use below annotation on top repo class
+
+@RepositoryRestResource(collectionResourceRel="myApp", path="myApp")
+
+	import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+	@RepositoryRestResource(collectionResourceRel="efeatures", path="efeatures")
+		public interface RefRepo extends JpaRepository<ProductItem, Integer> {
+		
+		
+And if u expose repo..people will have access to delete and save also ..to restrict access to that
+	
+	@Override
+	@RestResource(exported=false)
+	<S extends T>S save(S s);
+
+**********************Async Queries**********************
+	
+	calling repository query methods asynchronously
+		- when we execute query method asynchronously,method is invoked immediately and execution continues
+			while our query is executed in another task or thread
+		*accomplished by 
+	add this any method defination
+		long wait = new Random().nextInt(10000-1) + 1;
+		System.out.println(wait);
+		try {
+			Thread.sleep(wait);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	
+	check http://www.baeldung.com/configuration-properties-in-spring-boot
+	check video again
+	
+**********************Auditing**********************
+		
+	allows us to capture who made the last change and when happened
+	
+	add spring-aspects
+	
+********************hibernate*************************
+http://www.devglan.com/spring-boot/spring-boot-hibernate-5-example
+	
+	

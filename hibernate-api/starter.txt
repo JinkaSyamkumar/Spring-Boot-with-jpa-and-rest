@@ -1,0 +1,384 @@
+
+3 major pillars in hibernate programming
+	1.hibernate configuration
+	2.mapping metada
+	3.invoking persistence 
+	
+3 --> hibernate - api - session and transaction interfaces etc
+		deals with invoking persistence
+  		known as persistence manager api
+  					has methods that manage crud operations and transactions
+  	    in hibernate-api,Session interface helps crud and also to manage persistence lifecycle
+  	    
+  	    persistence lifecycle is different states our entities transition into and out of 
+  	    		depending on entity persistence states we will define whether to sync or not with db
+  	    		
+Hibernate session(get,load,save,update) vs JPA Entity Manager(persist , merge)
+
+Persistence Lifecycle
+	hibernate-api provides bunch of methods that will be invoked on entities
+		and those entities will transform into diff states
+	Methods and States in entity makeup the persistence lifecycle
+	
+To get hold of hibernate-api we need to understand persistence lifecycle
+
+Lifecycles example
+states - ex - earned, saved, spent, avaialble
+		how the states change, when u deposit it moves from earned to saved
+		to do that we need to invoke actions ie 
+Actions - ex - deposit(),purchase(), withdrawl()	
+
+	Above actions performed on objects
+	
+Hibernate lifecycle
+	Object, states and actions
+	
+	See the diagram - Hibernate Lifecycle.png
+	
+***1)States
+
+a)Outside Persistent context
+	1.Transient or New
+	2.Detached
+b)In persistent context
+	3) Persistent
+	4) Removed
+	
+If u see diagram, those two are outside of persitence context(persistent & Removed) box
+(imp***)so any time , we are in those two states, we are not dealing with persistence context
+so when entity is in persistent context, we will have persistent & removed states
+
+1)Transient or New state - 1.when object constructed with the new operator and 
+						  2.constructor
+						  3.that is not associated with any database row 
+						  or 
+						  4.there is no primary key associated with it
+		(if you are actually run garbage collection as the object not associated with any it will be lost that kind of stae)
+
+2)Persistent - 		1.an entity instance associated with a database row and contained within a persistent context
+				,   2.it has primary key associated with it
+				 
+				 and once it is in that state, 
+				 		we can perform all sorts of manipulation on that 
+				 		
+				 entity like updating fields etc  THAT updation on entity will be tracked 
+				 and its state will be sent to db and persisted there.
+				
+				 In order to get an object into persistent state we have 
+				 3 ways of doing it
+				 a.we can save Transient state object and make it persistent
+				 b.also we query db and get an object ie also considered in persistent state
+				 c.we can refer to transient object from another persistent object so may be we could
+				   add transient object to a collection contained within an object that is in persistent state
+				   
+3)Removed - an object scheduled for deletion						
+				initially it will be in persistent state and we call action to remove it from persistent context
+				
+4)Detached - object references to an entity once associated  with a closed persistence context
+			is what happens when you have an object that is in persistent state however we closed
+			persistence context 	containing that object so the persistence context has been closed
+			but we still have a reference to this object that was once PERSISTED but no longer in that state
+			at this particulat state, we call detached		
+
+**PERSISTENCE CONTEXT - what it is and what it does
+	PC is one of the object within life cycle that we need to consider(entity is another object in lifecycle)
+	PC provides cache of all PERSISTENT entity instances
+		When u put entities into persistent state, all of the changes made to that entity
+		are held in the persistent context.
+		
+	PC is usually created with a session
+	//Below after calling openSession(), we get PC and then
+	//After calling .save(obj) - at that point that object gets placed in Persistent Context
+	//And then we are querying another set of object,, again those objects will be placed in persistent context
+	//and if u make changes to them, persistent context will be aware of those changes
+	//and it is able to sync object model with db model
+	
+	transaction.commit();//causes our persistent context synchronize with db so all of our changes will be flushed to db
+	session.close();//**Close - closes Persistence Context 1
+	
+	SessionFactory factory = HibernateUtil.getSessionFactory();
+	Session session = factory.openSession();
+	//perform operations on entities
+	//session.save(obj);
+	//session.get(someotherobjects) - querying some other objects
+	session.close();	
+	
+	*Persistent Manager		
+	HOW does it sync bw object model to db model and 
+		how do we control entity transition from one state to other - To do that we use Persistent Manager
+	In this case it is our session , that helps with transition and sync
+	
+	Hibernate API actions
+	Check diagram - Hibernate API actions
+	
+	InitialState  		Action(Methods) 				EndState
+	None 				get() & load	()				Persistent
+	Transient(new)		save() & saveOrUpdate()		Persistent
+	Persistent			delete()						Removed
+	Detached				update() & saveOrUpdate()	Persistent
+	Persistent			evict()						Detached
+	
+	read it like(2row) --> Take an entity in Transient(new) state and call save()/saveOrUpdate(), it will be moved to Persistent stae
+	Above methods (2column) - help in sync and also to transfer entity states
+
+	-------Small Example------------------------
+	
+	Bank bank = new Bank(); //***Transient state
+	//bank.setetc etc.. - setting peoperties
+	SessionFactory factory = HibernateUtil.getSessionFactory();
+	
+	//****Persistent Context1 -		//Open session - opens the Persistent Context
+	Session session = factory.opeSession();
+	Transaction transaction = session.beginTransaction();
+	session.save(bank); //****Persistent State
+	transaction.commit();//causes our persistent context synchronize with db so all of our changes will be flushed to db
+	session.close();//**Close - closes Persistence Context 1
+	
+	//Ath this stage Bank entity is now in ***Detached state from pc
+	//if u obesreve above **Transient and **Detached are outside persistent context1 block as shown in diagram and save or removed within pc
+	
+	//we can now create another pc
+	
+	//****Persistent Context2
+	Session session = factory.opeSession();
+	Transaction transaction = session.beginTransaction();
+	session.delete(bank); //***Removed state- in hibernate only its possible, jpa wont allow to move from entity from DETACHED state to REMOVED
+	transaction.commit();
+	session.close();//**Close Persistence Context 2
+	
+	We will check next
+		saving entities
+		retrieving entities
+		modifying entities
+		removing entities
+		reattaching detached entities
+		save or update
+		flushing the persistence context
+		
+**Saving Entities		
+	an entity from Transient state to Persistent state 
+	CHECK SaveEntities.java
+	
+	//Below after calling openSession(), we get PC and then
+	//After calling .save(obj) - at that point that object gets placed in Persistent Context
+	//And then we are querying another set of object,, again those objects will be placed in persistent context
+	
+	SO PERSISTENT CONTEXT WILL BE CREATED AT OPENSESSION() BUT ENTITY WILL BE ADDED TO IT ONLY AFTER SAVE
+	
+	Before saving - not in persistent context
+	After saving - in persistent context
+
+**Retrieving Entities	
+	We use two methods provided by Hibernate Api to retrieve entity instances from db
+	these methods pulls data from db and adds them to Persistent Context 
+	
+	**GET***
+	1.Session.get() - expects two arguments - 1.Entity.class 2.Id value of row ie pkey
+	2.and we need to cast its value to the returned type
+	
+	Account acc =(Account) session.get(Account.class, 1L);
+	
+	//it queries db and gets the result
+	Account acc =(Account) session.get(Account.class, 1L);
+	//what if u call get twice, it wont query from db again - it will PULL FROM persistent context  CACHE
+	//as in the first get --> objects will be pulled from db and added to persistent context 
+	acc =(Account) session.get(Account.class, 1L); //dont query from db, verifyies in pc and pulls from it
+	
+	when u try to get something not there IN DB u get NULLPOINTER EXCEPTION
+	
+	**LOAD**
+		here when u debug
+		Ideally query should come and then "Method Executed" will be printed in the below method
+		BUT WITH LOAD METHOD - it wont query immediately unlike get
+		it will have proxies ready and only be queried when we need
+		here we need it while printing "Account holder name"
+		that time it will be queried from db so it tries to delay execution of select on db
+		will be useful when we just want to load one entity into other entity without making actual select query
+		like account has transaction, to save account suppose u need some transaction object but u dont actually need to have all the values
+		just for java purpose we need it..in this cases it will be useful
+			
+			Account acc =(Account) session.load(Account.class, 1L);
+			System.out.println("Method Executed");
+			System.out.println("Account holder name"+acc.getHoldername());
+			
+		when u try to get something not there IN DB u get ObjectNotFoundException
+	
+**Modifying Entities**
+
+		When we get entities from db we may want to update it and save again
+		//below we have not called update method after modifying holder name
+		//but hibernate is smart enough , tracks with pc entity and finds out that 
+		//entity modified and no longer in sync with db and
+		//issues update statement
+		
+		session.beginTransaction();	
+			Account acc = session.get(Account.class, 1L);
+			acc.setHoldername("UPDATED");
+		session.getTransaction().commit();
+		
+		//and if u re rerun same code without any modifying the fields
+		//hibernate tracks with pc and realizes nothing changed and 
+		//wont issues any update query
+		
+**REMOVING ENTITIE**		
+
+		When we invoke delete method on entity, it will 
+				deleted from PERSISTENT context and after commiting transaction or flushing pc it will be removed from db
+				ie Persistent to Removed state
+		
+					session.beginTransaction();
+			
+			//Persistent state - added to pc
+			Account acc = session.get(Account.class, 1L); 
+			System.out.println("In persistent context"+session.contains(acc));//true
+			//Removed state - deleted from pc but wont issue delete query
+			//delete query will be issued only after commit 
+			session.delete(acc);
+			System.out.println("Method executed");
+			System.out.println("In persistent context"+session.contains(acc));//false
+			session.getTransaction().commit();
+			
+		After delete action, will be removed from pc but not in db ie wont issue delete query
+		only after issuing commit- object model will be in sync with data model
+			it means delete query will be issued after commit
+			
+**REATTACHING DETACHED ENTITIES**
+		From our api table above, a detached entity will be reattached with the help of
+			update() or saveOrUpdate() method
+		hibernate issues update statement 
+			whether u update fields or not on entity when u invoke update method
+  	    		
+  	    					//persistent context 1
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			Account acc = (Account)session.get(Account.class, 10L);
+			session.getTransaction().commit();
+			session.close();
+			
+			//At this moment as closed above session.close - session and persistent context is closed
+			//we begin again below and try to reattche
+			//Persistent Context 2
+			Session session2 = HibernateUtil.getSessionFactory().openSession();
+			session2.beginTransaction();
+
+			System.out.println("Before update - in persistent context?:"+session2.contains(acc));
+			
+			session2.update(acc);
+			
+			System.out.println("After update - in persistent context?:"+session2.contains(acc));
+			session2.getTransaction().commit();
+			//hibernate issues update statement 
+				//whether u update fields or not on entity when u invoke update
+			session2.close();
+
+**SaveOrUpdate**
+		is capable of persisting a  TRANSIENT entity or re attaching a detached entity
+		
+				//persistent context 1
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		Account detachedAcc = (Account)session.get(Account.class, 10L);
+		session.getTransaction().commit();
+		session.close();
+		
+		Account transientAcc = createAccount();
+		
+		Session session2 = HibernateUtil.getSessionFactory().openSession();
+		session2.beginTransaction();
+		session2.saveOrUpdate(transientAcc); //SAVING TRANSIENT ENTITY
+		session2.saveOrUpdate(detachedAcc); //SAVING DETACHED ENTITY
+		detachedAcc.setHoldername("10L");
+		session2.getTransaction().commit();
+		session2.close();
+
+**FLUSHING THE PERSISTENCE CONTEXT****
+		flush() method
+			when we call flush what we are telling hibernate is to take all of the changes
+				in persistence context and sync them with underlying database
+		In order to understand flush() - we need to take a look at , 
+										another interface , TRANSACTION
+			
+		Working with session, we create session, we know that with session it creates persistence context
+			within the persistence context, we can keep track of all the changes to entity
+			
+		when we want to write those changes to db, we need connection and 
+			a TRANSACTION houses that connection
+		
+		One thing about transaction is we try to perform all those changes to db as one atomic unit
+			all the changes in pc need to be persisted in one flow
+			if one change fails ex we have
+					2 inserts and 1 update
+					if one insert fails
+					 we need to roll back everything thats the whole point of TRANSACTION
+					 
+		When we work with session, we will be using transaction as well.
+		
+		One of the way to sync up pc(which can have save/update/delete) with db 
+			is by calling commit method on transaction
+			transaction.commit();
+				or session.getTransaction().commit();
+			
+		What is happening underneath the transaction.commit() is
+			THIS COMMIT IS FORCING A FLUSH ON THE SESSION
+			There are 3 times a flush is called on session
+				1.if we were to call-- session.flush() -- explicitly (must be called before txion.commit and session.close)
+				2.when a commit is called on transaction --transaction.commit()--
+				3.sometimes when we call SELECT statement, flush occurs before it
+				
+				check java file
+						//WE are making two changes to entity
+			//after making first we are calling flush on session
+			//and we make another change and calling commit on transaction
+			//and also handle exception in catch torollback changes
+			//put transaction.
+			
+			Account acc = (Account)session.get(Account.class, 10L);
+			acc.setHoldername("FLUSH");
+			System.out.println("CALLING FLUSH");
+			session.flush();
+		
+			acc.setHolderbank("icici");
+			System.out.println("CALLING COMMIT");
+			transaction.commit();
+			//console log verify
+			//so what happens with flush, instead of waiting till COMMIT
+			//u can force persistent context to sync whatever it has with db
+			//and again accept for change on pc
+			//so usually one pc one commit
+			//but if u want to have multple commits to db in single pc , u can use flush
+
+
+Save()
+
+***Returns generated Id after saving. Its Serializable return type. -GOOD WHEN WORKING WITH SURROAGATE KEYS
+****Session.save() for a detached object will create a new row in the table.
+Saves the value to DB immediately and keeps track of the entity until the end of the session(I have tried to change the entity values outside of the transaction, it does not show any effect when session commits)
+Does not save the changes to the db outside of the transaction.
+Assigns the generated id to the entity you are persisting
+
+
+Persist()
+
+****Does not returns generated Id after saving. Its void return type. - GOOD WHEN WORKING WITH NATURAL KEYS
+****session.persist() for a detached object will throw PersistentObjectException as it is not allowed.
+Saves the value to DB immediately and keeps track of the entity until the end of the session.(I have tried to change the entity values outside of the transaction, it does not show any effect when session commits)
+Does not save the changes to the db outside of the transaction.
+Assigns the generated id to the entity you are persisting
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

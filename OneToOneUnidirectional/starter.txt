@@ -1,0 +1,57 @@
+Entity Associations
+	provide mapping metadata for various associations
+	Map collections of entity types
+	understand bidirectional n unidirectional relationships
+	
+Relationship/association 
+Owning Entity/Non Owning Entity - JoiColumn /JoinTable
+	Owning entity will have foreign key column
+	Above statement is true only for Bidirectional but it is not true in Unidirectional
+Source Object/Target Object - one table column specified as foreign key on the other table, first is Target, second is the source
+
+Entity Associations - reference from one entity to other
+				    - mapped to underlying db tables 
+1)One To One - one account has one set of credentials 
+2)One To Many - one account has many txions
+3)Many to one - from txions to account
+4)Many to Many - multiple users can be associated with many accounts - like wife and husband
+
+#1)Unidirectional One To One
+
+User to credentials
+
+user
+	id
+	name
+	age
+	crete_by
+	create_date
+	update_by
+	update_date
+
+credentials
+	cred_id
+	user_id
+	username
+	pwd
+
+	here user to credentials - unidirectional ie relation only from user to cred not the other way around
+	here cred has user id so it is source is cred and user is target entity
+	
+cascade=CascadeType.All mean when we persist cred entity , user entity also will be persisted.
+@JoinColumn - specifies the foreign key column NAME on the cred entity and also when u look at from the db side to get cred we need to pass userid for the join ie what it is
+AND SUPPOSE column name on cred is differeent from column on user we can specify it
+cred table has user_id but user table has id
+here user_id is referencing id column of user u can specify it with referenceColumnName="id"
+if the name on the both entities same no need to use referenceColumnName
+public class cred {
+...
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="user_id",referencedColumnName="id")
+	private UserEntity user;
+
+}
+	
+
+
+	
