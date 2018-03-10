@@ -44,6 +44,7 @@ public class RefController {
 		
 		ProductItem obProductItem= verifyValues(param1,param2,param3);
 		
+		
 		System.out.println(obProductItem);
 		return refService.getUPCs().stream().map(t -> toVO(t)).collect(Collectors.toList()); 
 		
